@@ -1,0 +1,29 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F271ED49-3212-47FB-A62C-67A46B8CF4B3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B71F46A8-8C6C-4170-8E1A-3EABCC3E8DE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoc-2023-csharp", "src\aoc-2023-csharp\aoc-2023-csharp.csproj", "{388C4AA8-1D45-4493-82CB-81A3E8174766}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoc-2023-csharp-tests", "tests\aoc-2023-csharp-tests\aoc-2023-csharp-tests.csproj", "{8AA3138C-8FC1-480B-885E-3D322923D822}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{388C4AA8-1D45-4493-82CB-81A3E8174766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{388C4AA8-1D45-4493-82CB-81A3E8174766}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{388C4AA8-1D45-4493-82CB-81A3E8174766}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{388C4AA8-1D45-4493-82CB-81A3E8174766}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AA3138C-8FC1-480B-885E-3D322923D822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA3138C-8FC1-480B-885E-3D322923D822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA3138C-8FC1-480B-885E-3D322923D822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA3138C-8FC1-480B-885E-3D322923D822}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{388C4AA8-1D45-4493-82CB-81A3E8174766} = {F271ED49-3212-47FB-A62C-67A46B8CF4B3}
+		{8AA3138C-8FC1-480B-885E-3D322923D822} = {B71F46A8-8C6C-4170-8E1A-3EABCC3E8DE6}
+	EndGlobalSection
+EndGlobal
