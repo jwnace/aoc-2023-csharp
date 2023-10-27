@@ -10,11 +10,11 @@ public static class Day22
 
     public static int Solve1(string input)
     {
-        throw new NotImplementedException();
+        return 0;
     }
 
     public static int Solve2(string input)
     {
-        throw new NotImplementedException();
+        return 0;
     }
 }
