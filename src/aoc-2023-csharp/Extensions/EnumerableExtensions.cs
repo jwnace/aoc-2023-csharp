@@ -2,6 +2,16 @@
 
 public static class EnumerableExtensions
 {
+    public static IEnumerable<IEnumerable<T>> Windowed<T>(this IEnumerable<T> source, int size)
+    {
+        var array = source as T[] ?? source.ToArray();
+
+        for (var i = 0; i < array.Length - size + 1; i++)
+        {
+            yield return array.Skip(i).Take(size);
+        }
+    }
+
     public static IEnumerable<IEnumerable<T>> GetCombinations<T>(this IEnumerable<T> enumerable, int length) where T : IComparable
     {
         return length switch
