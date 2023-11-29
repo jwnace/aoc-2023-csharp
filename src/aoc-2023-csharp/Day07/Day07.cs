@@ -2,7 +2,7 @@ namespace aoc_2023_csharp.Day07;
 
 public static class Day07
 {
-    private static readonly string Input = File.ReadAllText("Day07/day07.txt");
+    private static readonly string Input = File.ReadAllText("Day07/day07.txt").Trim();
 
     public static int Part1() => Solve1(Input);
 

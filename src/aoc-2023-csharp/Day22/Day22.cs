@@ -2,7 +2,7 @@
 
 public static class Day22
 {
-    private static readonly string Input = File.ReadAllText("Day22/day22.txt");
+    private static readonly string Input = File.ReadAllText("Day22/day22.txt").Trim();
 
     public static int Part1() => Solve1(Input);
 
