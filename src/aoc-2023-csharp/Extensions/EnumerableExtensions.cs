@@ -34,6 +34,27 @@ public static class EnumerableExtensions
             .SelectMany(x => enumerable.Where(y => !x.Contains(y)), (a, b) => a.Concat(new[] { b }));
     }
 
+    // TODO: this uses the index instead of the value to build permutations
+    // public static IEnumerable<IEnumerable<T>> GetPermutations<T>(this IEnumerable<T> source)
+    // {
+    //     var array = source as T[] ?? source.ToArray();
+    //
+    //     if (array.Length == 1)
+    //     {
+    //         yield return array;
+    //     }
+    //
+    //     for (var i = 0; i < array.Length; i++)
+    //     {
+    //         var item = array[i];
+    //
+    //         foreach (var permutation in array.Where((_, index) => index != i).GetPermutations())
+    //         {
+    //             yield return new[] { item }.Concat(permutation);
+    //         }
+    //     }
+    // }
+
     public static void Deconstruct<T>(this T[] array, out T first, out T second)
     {
         first = array[0];
