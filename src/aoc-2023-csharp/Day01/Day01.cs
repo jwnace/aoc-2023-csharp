@@ -22,56 +22,33 @@ public static class Day01
     public static int Part2() => Solve2(Input);
 
     public static int Solve1(IEnumerable<string> input) =>
-        input.Select(x => x.Where(char.IsDigit).ToArray())
-            .Select(x => $"{x.First()}{x.Last()}")
+        input.Select(line => line.Where(char.IsDigit).ToArray())
+            .Select(digits => $"{digits.First()}{digits.Last()}")
             .Sum(int.Parse);
 
     public static int Solve2(IEnumerable<string> input) =>
         input.Sum(line => GetFirstDigit(line) * 10 + GetLastDigit(line));
 
-    private static int GetFirstDigit(string input)
+    private static int GetFirstDigit(string input) => GetDigits(input).First();
+
+    private static int GetLastDigit(string input) => GetDigits(input).Last();
+
+    private static IEnumerable<int> GetDigits(string input)
     {
-        var firstDigit = Digits.Select(pair => new
+        for (var i = 0; i < input.Length; i++)
+        {
+            if (char.IsDigit(input[i]))
             {
-                Index = input.IndexOf(pair.Value.ToString(), StringComparison.Ordinal),
-                Digit = pair.Value
-            })
-            .Where(x => x.Index >= 0)
-            .MinBy(x => x.Index) ?? new { Index = int.MaxValue, Digit = 0 };
+                yield return input[i] - '0';
+            }
 
-        var firstDigitString = Digits.Select(pair => new
+            foreach (var digit in Digits.Keys)
             {
-                Index = input.IndexOf(pair.Key, StringComparison.Ordinal),
-                Digit = pair.Value
-            })
-            .Where(x => x.Index >= 0)
-            .MinBy(x => x.Index) ?? new { Index = int.MaxValue, Digit = 0 };
-
-        return firstDigitString.Index < firstDigit.Index
-            ? firstDigitString.Digit
-            : firstDigit.Digit;
-    }
-
-    private static int GetLastDigit(string input)
-    {
-        var lastDigit = Digits.Select(pair => new
-            {
-                Index = input.LastIndexOf(pair.Value.ToString(), StringComparison.Ordinal),
-                Digit = pair.Value
-            })
-            .Where(x => x.Index >= 0)
-            .MaxBy(x => x.Index) ?? new { Index = int.MinValue, Digit = 0 };
-
-        var lastDigitString = Digits.Select(pair => new
-            {
-                Index = input.LastIndexOf(pair.Key, StringComparison.Ordinal),
-                Digit = pair.Value
-            })
-            .Where(x => x.Index >= 0)
-            .MaxBy(x => x.Index) ?? new { Index = int.MinValue, Digit = 0 };
-
-        return lastDigitString.Index > lastDigit.Index
-            ? lastDigitString.Digit
-            : lastDigit.Digit;
+                if (input[i..].StartsWith(digit))
+                {
+                    yield return Digits[digit];
+                }
+            }
+        }
     }
 }
