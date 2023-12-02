@@ -4,8 +4,8 @@ Console.ForegroundColor = ConsoleColor.Green;
 
 await Runner.RunPart(01, 1, Day01.Part1);
 await Runner.RunPart(01, 2, Day01.Part2);
-// await Runner.RunPart(02, 1, Day02.Part1);
-// await Runner.RunPart(02, 2, Day02.Part2);
+await Runner.RunPart(02, 1, Day02.Part1);
+await Runner.RunPart(02, 2, Day02.Part2);
 // await Runner.RunPart(03, 1, Day03.Part1);
 // await Runner.RunPart(03, 2, Day03.Part2);
 // await Runner.RunPart(04, 1, Day04.Part1);
