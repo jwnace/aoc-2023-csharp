@@ -6,8 +6,8 @@ await Runner.RunPart(01, 1, Day01.Part1);
 await Runner.RunPart(01, 2, Day01.Part2);
 await Runner.RunPart(02, 1, Day02.Part1);
 await Runner.RunPart(02, 2, Day02.Part2);
-// await Runner.RunPart(03, 1, Day03.Part1);
-// await Runner.RunPart(03, 2, Day03.Part2);
+await Runner.RunPart(03, 1, Day03.Part1);
+await Runner.RunPart(03, 2, Day03.Part2);
 // await Runner.RunPart(04, 1, Day04.Part1);
 // await Runner.RunPart(04, 2, Day04.Part2);
 // await Runner.RunPart(05, 1, Day05.Part1);
@@ -52,3 +52,5 @@ await Runner.RunPart(02, 2, Day02.Part2);
 // await Runner.RunPart(24, 2, Day24.Part2);
 // await Runner.RunPart(25, 1, Day25.Part1);
 // await Runner.RunPart(25, 2, Day25.Part2);
+
+Console.ResetColor();
