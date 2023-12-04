@@ -1,6 +1,4 @@
-﻿using aoc_2023_csharp.Extensions;
-
-namespace aoc_2023_csharp.Day04;
+﻿namespace aoc_2023_csharp.Day04;
 
 public static class Day04
 {
@@ -10,11 +8,12 @@ public static class Day04
 
     public static int Part2() => Solve2(Input);
 
-    public static int Solve1(string[] input) => GetScratchCards(input).Sum(c => c.Score);
+    public static int Solve1(string[] input) =>
+        input.Select(ScratchCard.Parse).Sum(c => c.Score);
 
     public static int Solve2(string[] input)
     {
-        var cards = GetScratchCards(input).ToArray();
+        var cards = input.Select(ScratchCard.Parse).ToArray();
         var cardCounts = cards.ToDictionary(card => card.CardNumber, _ => 1);
 
         var minCardNumber = cards.Min(c => c.CardNumber);
@@ -32,25 +31,5 @@ public static class Day04
         }
 
         return cardCounts.Values.Sum();
-    }
-
-    private static IEnumerable<ScratchCard> GetScratchCards(string[] input)
-    {
-        foreach (var line in input)
-        {
-            var (left, right) = line.Split(": ");
-            var cardNumber = int.Parse(left[5..]);
-            var (winningNumbers, numbersYouHave) = right.Split(" | ");
-
-            var winningNumbersArray = winningNumbers.Split(" ", StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
-                .ToArray();
-
-            var numbersYouHaveArray = numbersYouHave.Split(" ", StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
-                .ToArray();
-
-            yield return new ScratchCard(cardNumber, winningNumbersArray, numbersYouHaveArray);
-        }
     }
 }
