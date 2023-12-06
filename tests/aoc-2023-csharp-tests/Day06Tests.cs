@@ -4,24 +4,24 @@ namespace aoc_2023_csharp_tests;
 
 public class Day06Tests
 {
-    // TODO: I think there is an error in the problem description for this example
-    // [Test]
-    // public void Part1_Example()
-    // {
-    //     // arrange
-    //     var input = """
-    //                 Time:      7  15   30
-    //                 Distance:  9  40  200
-    //                 """;
-    //
-    //     var expected = 288;
-    //
-    //     // act
-    //     var actual = Day06.Solve1(input);
-    //
-    //     // assert
-    //     actual.Should().Be(expected);
-    // }
+    [Test, Ignore("I think there is an error in the problem description for this example")]
+    public void Part1_Example()
+    {
+        // arrange
+        var input = new[]
+        {
+            "Time:      7  15   30",
+            "Distance:  9  40  200",
+        };
+
+        var expected = 288;
+
+        // act
+        var actual = Day06.Solve1(input);
+
+        // assert
+        actual.Should().Be(expected);
+    }
 
     [Test]
     public void Part1_Solution()
@@ -33,10 +33,11 @@ public class Day06Tests
     public void Part2_Example()
     {
         // arrange
-        var input = """
-                    Time:      7  15   30
-                    Distance:  9  40  200
-                    """;
+        var input = new[]
+        {
+            "Time:      7  15   30",
+            "Distance:  9  40  200",
+        };
 
         var expected = 71503;
 
