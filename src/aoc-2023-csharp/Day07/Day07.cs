@@ -6,54 +6,11 @@ public static class Day07
 {
     private static readonly string[] Input = File.ReadAllLines("Day07/day07.txt").ToArray();
 
-    private static readonly Dictionary<char, int> StrengthLookup = new()
-    {
-        {
-            '2', 1
-        },
-        {
-            '3', 2
-        },
-        {
-            '4', 3
-        },
-        {
-            '5', 4
-        },
-        {
-            '6', 5
-        },
-        {
-            '7', 6
-        },
-        {
-            '8', 7
-        },
-        {
-            '9', 8
-        },
-        {
-            'T', 9
-        },
-        {
-            'J', 10
-        },
-        {
-            'Q', 11
-        },
-        {
-            'K', 12
-        },
-        {
-            'A', 13
-        },
-    };
+    public static long Part1() => Solve1(Input);
 
-    public static int Part1() => Solve1(Input);
+    public static long Part2() => Solve2(Input);
 
-    public static int Part2() => Solve2(Input);
-
-    public static int Solve1(string[] input)
+    public static long Solve1(string[] input)
     {
         var hands = new List<Hand>();
 
@@ -61,20 +18,22 @@ public static class Day07
         {
             var (cards, bid) = line.Split(" ");
 
-            var cardArray = cards.Select(x => StrengthLookup[x]).Select(x => new Card(x)).ToArray();
+            var cardArray = cards.Select(c => GetCardType(c, useJokers: false))
+                .Select(type => new Card(type))
+                .ToArray();
 
-            var hand = new Hand(cardArray, int.Parse(bid));
+            var hand = new Hand(cardArray, long.Parse(bid));
 
             hands.Add(hand);
         }
 
         var sortedHands =
             hands.OrderBy(x => x.HandType)
-                .ThenBy(x => x.Cards[0].Strength)
-                .ThenBy(x => x.Cards[1].Strength)
-                .ThenBy(x => x.Cards[2].Strength)
-                .ThenBy(x => x.Cards[3].Strength)
-                .ThenBy(x => x.Cards[4].Strength)
+                .ThenBy(x => x.Cards[0].Type)
+                .ThenBy(x => x.Cards[1].Type)
+                .ThenBy(x => x.Cards[2].Type)
+                .ThenBy(x => x.Cards[3].Type)
+                .ThenBy(x => x.Cards[4].Type)
                 .ToList();
 
         var query = sortedHands.Select((hand, index) => hand.Bid * (index + 1)).Sum();
@@ -82,56 +41,51 @@ public static class Day07
         return query;
     }
 
-    public static int Solve2(string[] input)
+    public static long Solve2(string[] input)
     {
-        return 0;
-    }
+        var hands = new List<Hand>();
 
-    private record Hand(Card[] Cards, int Bid)
-    {
-        public bool IsFiveOfAKind() => Cards.GroupBy(x => x.Strength).Count() == 1;
-
-        public bool IsFourOfAKind() => Cards.GroupBy(x => x.Strength).Any(g => g.Count() == 4);
-
-        public bool IsFullHouse() =>
-            Cards.GroupBy(x => x.Strength).Any(g => g.Count() == 3) &&
-            Cards.GroupBy(x => x.Strength).Any(g => g.Count() == 2);
-
-        public bool IsThreeOfAKind() => Cards.GroupBy(x => x.Strength).Any(g => g.Count() == 3);
-
-        public bool IsTwoPairs() => Cards.GroupBy(x => x.Strength).Count() == 3;
-
-        public bool IsOnePair() => Cards.GroupBy(x => x.Strength).Count() == 4;
-
-        public bool IsHighCard() => Cards.GroupBy(x => x.Strength).Count() == 5;
-
-        public HandType HandType
+        foreach (var line in input)
         {
-            get
-            {
-                if (IsFiveOfAKind()) return HandType.FiveOfAKind;
-                if (IsFourOfAKind()) return HandType.FourOfAKind;
-                if (IsFullHouse()) return HandType.FullHouse;
-                if (IsThreeOfAKind()) return HandType.ThreeOfAKind;
-                if (IsTwoPairs()) return HandType.TwoPairs;
-                if (IsOnePair()) return HandType.OnePair;
-                if (IsHighCard()) return HandType.HighCard;
+            var (cards, bid) = line.Split(" ");
 
-                throw new Exception("No hand type found");
-            }
+            var cardArray = cards.Select(c => GetCardType(c, useJokers: true))
+                .Select(type => new Card(type))
+                .ToArray();
+
+            var hand = new Hand(cardArray, long.Parse(bid));
+
+            hands.Add(hand);
         }
+
+        var sortedHands =
+            hands.OrderBy(x => x.HandType)
+                .ThenBy(x => x.Cards[0].Type)
+                .ThenBy(x => x.Cards[1].Type)
+                .ThenBy(x => x.Cards[2].Type)
+                .ThenBy(x => x.Cards[3].Type)
+                .ThenBy(x => x.Cards[4].Type)
+                .ToList();
+
+        return sortedHands.Select((hand, index) => hand.Bid * (index + 1)).Sum();
     }
 
-    private record Card(int Strength);
-
-    public enum HandType
+    private static CardType GetCardType(char c, bool useJokers = false) => c switch
     {
-        HighCard,
-        OnePair,
-        TwoPairs,
-        ThreeOfAKind,
-        FullHouse,
-        FourOfAKind,
-        FiveOfAKind,
-    }
+        'J' when useJokers == true => CardType.Joker,
+        '2' => CardType.Two,
+        '3' => CardType.Three,
+        '4' => CardType.Four,
+        '5' => CardType.Five,
+        '6' => CardType.Six,
+        '7' => CardType.Seven,
+        '8' => CardType.Eight,
+        '9' => CardType.Nine,
+        'T' => CardType.Ten,
+        'J' when useJokers == false => CardType.Jack,
+        'Q' => CardType.Queen,
+        'K' => CardType.King,
+        'A' => CardType.Ace,
+        _ => CardType.None,
+    };
 }

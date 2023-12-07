@@ -57,6 +57,6 @@ public class Day07Tests
     [Test]
     public void Part2_Solution()
     {
-        Day07.Part2().Should().Be(0);
+        Day07.Part2().Should().Be(248750248);
     }
 }
