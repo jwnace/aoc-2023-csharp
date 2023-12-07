@@ -19,24 +19,16 @@ public record Hand(Card[] Cards, long Bid)
         }
     }
 
-    private static CardType GetCardType(char c, bool useJokers) => c switch
+    private HandType CalculateHandType()
     {
-        'J' when useJokers => CardType.Joker,
-        '2' => CardType.Two,
-        '3' => CardType.Three,
-        '4' => CardType.Four,
-        '5' => CardType.Five,
-        '6' => CardType.Six,
-        '7' => CardType.Seven,
-        '8' => CardType.Eight,
-        '9' => CardType.Nine,
-        'T' => CardType.Ten,
-        'J' when !useJokers => CardType.Jack,
-        'Q' => CardType.Queen,
-        'K' => CardType.King,
-        'A' => CardType.Ace,
-        _ => CardType.None,
-    };
+        if (IsFiveOfAKind()) return HandType.FiveOfAKind;
+        if (IsFourOfAKind()) return HandType.FourOfAKind;
+        if (IsFullHouse()) return HandType.FullHouse;
+        if (IsThreeOfAKind()) return HandType.ThreeOfAKind;
+        if (IsTwoPairs()) return HandType.TwoPairs;
+        if (IsOnePair()) return HandType.OnePair;
+        return HandType.HighCard;
+    }
 
     private bool IsFiveOfAKind() =>
         Cards.GroupByType().Count() == 1 ||
@@ -77,17 +69,6 @@ public record Hand(Card[] Cards, long Bid)
         };
     }
 
-    private HandType CalculateHandType()
-    {
-        if (IsFiveOfAKind()) return HandType.FiveOfAKind;
-        if (IsFourOfAKind()) return HandType.FourOfAKind;
-        if (IsFullHouse()) return HandType.FullHouse;
-        if (IsThreeOfAKind()) return HandType.ThreeOfAKind;
-        if (IsTwoPairs()) return HandType.TwoPairs;
-        if (IsOnePair()) return HandType.OnePair;
-        return HandType.HighCard;
-    }
-
     public static Hand Parse(string line, bool useJokers)
     {
         var (cards, bid) = line.Split(" ");
@@ -98,4 +79,23 @@ public record Hand(Card[] Cards, long Bid)
 
         return new Hand(cardArray, long.Parse(bid));
     }
+
+    private static CardType GetCardType(char c, bool useJokers) => c switch
+    {
+        'J' when useJokers => CardType.Joker,
+        '2' => CardType.Two,
+        '3' => CardType.Three,
+        '4' => CardType.Four,
+        '5' => CardType.Five,
+        '6' => CardType.Six,
+        '7' => CardType.Seven,
+        '8' => CardType.Eight,
+        '9' => CardType.Nine,
+        'T' => CardType.Ten,
+        'J' when !useJokers => CardType.Jack,
+        'Q' => CardType.Queen,
+        'K' => CardType.King,
+        'A' => CardType.Ace,
+        _ => CardType.None,
+    };
 }
