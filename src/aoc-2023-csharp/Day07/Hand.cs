@@ -38,35 +38,23 @@ public record Hand(Card[] Cards, long Bid)
         _ => CardType.None,
     };
 
-    private bool IsFiveOfAKind()
-    {
+    private bool IsFiveOfAKind() =>
         // if all of the cards are the same type, we already have five of a kind
-        if (Cards.GroupByType().Count() == 1)
-        {
-            return true;
-        }
-
+        Cards.GroupByType().Count() == 1 ||
         // if all non-joker cards are the same type, we can make five of a kind
-        return Cards.ExcludeJokers().GroupByType().Count() == 1;
-    }
+        Cards.ExcludeJokers().GroupByType().Count() == 1;
 
-    private bool IsFourOfAKind()
-    {
-        // if we can all of the jokers to any group and end up with a group of four, we can make four of a kind
-        return Cards.ExcludeJokers().GroupByType().Any(g => g.Count() + Cards.CountJokers() == 4);
-    }
+    private bool IsFourOfAKind() =>
+        // if we can add all of the jokers to any group and end up with a group of four, we can make four of a kind
+        Cards.ExcludeJokers().GroupByType().Any(g => g.Count() + Cards.CountJokers() == 4);
 
-    private bool IsFullHouse()
-    {
+    private bool IsFullHouse() =>
         // if we only have two unique types (not including jokers), we can make a full house
-        return Cards.ExcludeJokers().GroupByType().Count() == 2;
-    }
+        Cards.ExcludeJokers().GroupByType().Count() == 2;
 
-    private bool IsThreeOfAKind()
-    {
-        // if we can all of the jokers to any group and end up with a group of three, we can make four of a kind
-        return Cards.ExcludeJokers().GroupByType().Any(g => g.Count() + Cards.CountJokers() == 3);
-    }
+    private bool IsThreeOfAKind() =>
+        // if we can add all of the jokers to any group and end up with a group of three, we can make four of a kind
+        Cards.ExcludeJokers().GroupByType().Any(g => g.Count() + Cards.CountJokers() == 3);
 
     private bool IsTwoPairs()
     {
@@ -75,8 +63,11 @@ public record Hand(Card[] Cards, long Bid)
 
         return jokerCount switch
         {
+            // if we have exactly two groups of two, we already have two pairs
             0 => Cards.GroupByType().Count(g => g.Count() == 2) == 2,
+            // if we have exactly one group of two, and one joker, we can make two pairs
             1 => nonJokers.GroupByType().Any(g => g.Count() == 2),
+            // if we have no groups of two, and two jokers, we can make two pairs
             2 => nonJokers.GroupByType().All(g => g.Count() == 1),
             _ => false
         };
@@ -88,7 +79,9 @@ public record Hand(Card[] Cards, long Bid)
 
         return jokerCount switch
         {
-            0 => Cards.GroupByType().Count() == 4,
+            // if we have a group of two, we already have one pair
+            0 => Cards.GroupByType().Any(g => g.Count() == 2),
+            // if we have no groups of two, and one joker, we can make one pair
             1 => true,
             _ => false
         };
