@@ -29,15 +29,23 @@ public class Day07Tests
     [Test]
     public void Part1_Solution()
     {
-        Day07.Part1().Should().Be(0);
+        Day07.Part1().Should().Be(249390788);
     }
 
     [Test]
     public void Part2_Example()
     {
         // arrange
-        var input = new[] { "" };
-        var expected = 0;
+        var input = new[]
+        {
+            "32T3K 765",
+            "T55J5 684",
+            "KK677 28",
+            "KTJJT 220",
+            "QQQJA 483",
+        };
+
+        var expected = 5905;
 
         // act
         var actual = Day07.Solve2(input);
