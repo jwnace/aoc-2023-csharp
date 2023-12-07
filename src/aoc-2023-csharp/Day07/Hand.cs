@@ -1,3 +1,5 @@
+using aoc_2023_csharp.Extensions;
+
 namespace aoc_2023_csharp.Day07;
 
 public record Hand(Card[] Cards, long Bid)
@@ -16,6 +18,25 @@ public record Hand(Card[] Cards, long Bid)
             return _handType;
         }
     }
+
+    private static CardType GetCardType(char c, bool useJokers) => c switch
+    {
+        'J' when useJokers => CardType.Joker,
+        '2' => CardType.Two,
+        '3' => CardType.Three,
+        '4' => CardType.Four,
+        '5' => CardType.Five,
+        '6' => CardType.Six,
+        '7' => CardType.Seven,
+        '8' => CardType.Eight,
+        '9' => CardType.Nine,
+        'T' => CardType.Ten,
+        'J' when !useJokers => CardType.Jack,
+        'Q' => CardType.Queen,
+        'K' => CardType.King,
+        'A' => CardType.Ace,
+        _ => CardType.None,
+    };
 
     private bool IsFiveOfAKind()
     {
@@ -82,5 +103,16 @@ public record Hand(Card[] Cards, long Bid)
         if (IsTwoPairs()) return HandType.TwoPairs;
         if (IsOnePair()) return HandType.OnePair;
         return HandType.HighCard;
+    }
+
+    public static Hand Parse(string line, bool useJokers)
+    {
+        var (cards, bid) = line.Split(" ");
+
+        var cardArray = cards.Select(c => GetCardType(c, useJokers))
+            .Select(type => new Card(type))
+            .ToArray();
+
+        return new Hand(cardArray, long.Parse(bid));
     }
 }
