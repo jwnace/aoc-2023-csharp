@@ -8,8 +8,16 @@ public class Day07Tests
     public void Part1_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            "32T3K 765",
+            "T55J5 684",
+            "KK677 28",
+            "KTJJT 220",
+            "QQQJA 483",
+        };
+
+        var expected = 6440;
 
         // act
         var actual = Day07.Solve1(input);
@@ -28,7 +36,7 @@ public class Day07Tests
     public void Part2_Example()
     {
         // arrange
-        var input = "";
+        var input = new[] { "" };
         var expected = 0;
 
         // act
