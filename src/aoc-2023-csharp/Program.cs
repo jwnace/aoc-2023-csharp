@@ -1,23 +1,26 @@
 ﻿using aoc_2023_csharp.Common;
+using BenchmarkDotNet.Running;
+
+BenchmarkRunner.Run<Day08Benchmarks>();
 
 Console.ForegroundColor = ConsoleColor.Green;
 
-await Runner.RunPart(01, 1, Day01.Part1);
-await Runner.RunPart(01, 2, Day01.Part2);
-await Runner.RunPart(02, 1, Day02.Part1);
-await Runner.RunPart(02, 2, Day02.Part2);
-await Runner.RunPart(03, 1, Day03.Part1);
-await Runner.RunPart(03, 2, Day03.Part2);
-await Runner.RunPart(04, 1, Day04.Part1);
-await Runner.RunPart(04, 2, Day04.Part2);
-await Runner.RunPart(05, 1, Day05.Part1);
-await Runner.RunPart(05, 2, Day05.Part2);
-await Runner.RunPart(06, 1, Day06.Part1);
-await Runner.RunPart(06, 2, Day06.Part2);
-await Runner.RunPart(07, 1, Day07.Part1);
-await Runner.RunPart(07, 2, Day07.Part2);
-await Runner.RunPart(08, 1, Day08.Part1);
-await Runner.RunPart(08, 2, Day08.Part2);
+// await Runner.RunPart(01, 1, Day01.Part1);
+// await Runner.RunPart(01, 2, Day01.Part2);
+// await Runner.RunPart(02, 1, Day02.Part1);
+// await Runner.RunPart(02, 2, Day02.Part2);
+// await Runner.RunPart(03, 1, Day03.Part1);
+// await Runner.RunPart(03, 2, Day03.Part2);
+// await Runner.RunPart(04, 1, Day04.Part1);
+// await Runner.RunPart(04, 2, Day04.Part2);
+// await Runner.RunPart(05, 1, Day05.Part1);
+// await Runner.RunPart(05, 2, Day05.Part2);
+// await Runner.RunPart(06, 1, Day06.Part1);
+// await Runner.RunPart(06, 2, Day06.Part2);
+// await Runner.RunPart(07, 1, Day07.Part1);
+// await Runner.RunPart(07, 2, Day07.Part2);
+// await Runner.RunPart(08, 1, Day08.Part1);
+// await Runner.RunPart(08, 2, Day08.Part2);
 // await Runner.RunPart(09, 1, Day09.Part1);
 // await Runner.RunPart(09, 2, Day09.Part2);
 // await Runner.RunPart(10, 1, Day10.Part1);
