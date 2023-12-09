@@ -16,17 +16,7 @@ public static class Day09
 
     private static int Extrapolate(string line)
     {
-        var numbers = line.Split(" ").Select(int.Parse).ToList();
-        var nextSequence = numbers.ToList();
-        var sequences = new List<List<int>> { numbers };
-
-        while (nextSequence.Any(n => n != 0))
-        {
-            nextSequence = nextSequence.Windowed(2).Select(w => w.ToList()).Select(w => w[1] - w[0]).ToList();
-            sequences.Add(nextSequence);
-        }
-
-        sequences.Last().Add(0);
+        var sequences = ParseInput(line);
 
         for (var i = sequences.Count - 1; i > 0; i--)
         {
@@ -43,17 +33,7 @@ public static class Day09
 
     private static int ExtrapolateBackwards(string line)
     {
-        var numbers = line.Split(" ").Select(int.Parse).ToList();
-        var nextSequence = numbers.ToList();
-        var sequences = new List<List<int>> { numbers };
-
-        while (nextSequence.Any(n => n != 0))
-        {
-            nextSequence = nextSequence.Windowed(2).Select(w => w.ToList()).Select(w => w[1] - w[0]).ToList();
-            sequences.Add(nextSequence);
-        }
-
-        sequences.Last().Add(0);
+        var sequences = ParseInput(line);
 
         for (var i = sequences.Count - 1; i > 0; i--)
         {
@@ -66,5 +46,21 @@ public static class Day09
         }
 
         return sequences.First().First();
+    }
+
+    private static List<List<int>> ParseInput(string line)
+    {
+        var numbers = line.Split(" ").Select(int.Parse).ToList();
+        var nextSequence = numbers.ToList();
+        var sequences = new List<List<int>> { numbers };
+
+        while (nextSequence.Any(n => n != 0))
+        {
+            nextSequence = nextSequence.Windowed(2).Select(w => w.ToList()).Select(w => w[1] - w[0]).ToList();
+            sequences.Add(nextSequence);
+        }
+
+        sequences.Last().Add(0);
+        return sequences;
     }
 }
