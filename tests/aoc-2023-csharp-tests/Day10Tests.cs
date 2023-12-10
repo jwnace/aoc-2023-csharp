@@ -11,7 +11,7 @@ public class Day10Tests
         ".|.|.",
         ".L-J.",
         ".....",
-    }, 4)]
+    }, 4, TestName = "Part 1 Example 1")]
     [TestCase(new[]
     {
         "..F7.",
@@ -19,7 +19,7 @@ public class Day10Tests
         "SJ.L7",
         "|F--J",
         "LJ...",
-    }, 8)]
+    }, 8, TestName = "Part 1 Example 2")]
     public void Part1_Example(string[] input, int expected)
     {
         // act
@@ -46,7 +46,7 @@ public class Day10Tests
         ".|..|.|..|.",
         ".L--J.L--J.",
         "...........",
-    }, 4)]
+    }, 4, TestName = "Part 2 Example 1")]
     [TestCase(new[]
     {
         "..........",
@@ -58,7 +58,7 @@ public class Day10Tests
         ".|..||..|.",
         ".L--JL--J.",
         "..........",
-    }, 4)]
+    }, 4, TestName = "Part 2 Example 2")]
     [TestCase(new[]
     {
         ".F----7F7F7F7F-7....",
@@ -71,7 +71,7 @@ public class Day10Tests
         ".....|FJLJ|FJ|F7|.LJ",
         "....FJL-7.||.||||...",
         "....L---J.LJ.LJLJ...",
-    }, 8)]
+    }, 8, TestName = "Part 2 Example 3")]
     [TestCase(new[]
     {
         "FF7FSF7F7F7F7F7F---7",
@@ -84,7 +84,7 @@ public class Day10Tests
         "7-L-JL7||F7|L7F-7F7|",
         "L.L7LFJ|||||FJL7||LJ",
         "L7JLJL-JLJLJL--JLJ.L",
-    }, 10)]
+    }, 10, TestName = "Part 2 Example 4")]
     public void Part2_Example(string[] input, int expected)
     {
         // act
