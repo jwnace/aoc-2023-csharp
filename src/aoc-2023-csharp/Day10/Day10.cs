@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace aoc_2023_csharp.Day10;
+﻿namespace aoc_2023_csharp.Day10;
 
 public static class Day10
 {
@@ -12,6 +10,22 @@ public static class Day10
 
     public static int Solve1(string[] input)
     {
+        var grid = BuildGrid(input);
+        var (_, maxDistance) = BuildLoop(grid);
+
+        return maxDistance;
+    }
+
+    public static int Solve2(string[] input)
+    {
+        var grid = BuildGrid(input);
+        var (loop, _) = BuildLoop(grid);
+
+        return CountPointsInsideLoop(loop, grid);
+    }
+
+    private static Dictionary<(int row, int col), char> BuildGrid(string[] input)
+    {
         var grid = new Dictionary<(int row, int col), char>();
 
         for (var row = 0; row < input.Length; row++)
@@ -22,8 +36,13 @@ public static class Day10
             }
         }
 
-        var start = grid.Single(g => g.Value == 'S');
+        return grid;
+    }
 
+    private static (HashSet<(int row, int col)> loop, int distance) BuildLoop(
+        IReadOnlyDictionary<(int row, int col), char> grid)
+    {
+        var start = grid.Single(g => g.Value == 'S');
         var queue = new Queue<(int row, int col, int distance)>();
         queue.Enqueue((start.Key.row, start.Key.col, 0));
 
@@ -35,6 +54,7 @@ public static class Day10
         {
             var currentPosition = queue.Dequeue();
             var (row, col, distance) = currentPosition;
+            var current = grid[(row, col)];
 
             if (!visited.Add((row, col)))
             {
@@ -43,51 +63,69 @@ public static class Day10
 
             maxDistance = Math.Max(maxDistance, distance);
 
-            if (grid.TryGetValue((row - 1, col), out var up) && up is '|' or '7' or 'F' or 'S')
+            if (grid.TryGetValue((row - 1, col), out var up) &&
+                "|LJS".Contains(current) &&
+                "|F7".Contains(up))
             {
                 queue.Enqueue((row - 1, col, distance + 1));
             }
 
-            if (grid.TryGetValue((row + 1, col), out var down) && down is '|' or 'L' or 'J' or 'S')
+            if (grid.TryGetValue((row + 1, col), out var down) &&
+                "|F7S".Contains(current) &&
+                "|LJ".Contains(down))
             {
                 queue.Enqueue((row + 1, col, distance + 1));
             }
 
-            if (grid.TryGetValue((row, col - 1), out var left) && left is '-' or 'L' or 'F' or 'S')
+            if (grid.TryGetValue((row, col - 1), out var left) &&
+                "-J7S".Contains(current) &&
+                "-LF".Contains(left))
             {
                 queue.Enqueue((row, col - 1, distance + 1));
             }
 
-            if (grid.TryGetValue((row, col + 1), out var right) && right is '-' or 'J' or '7' or 'S')
+            if (grid.TryGetValue((row, col + 1), out var right) &&
+                "-LFS".Contains(current) &&
+                "-J7".Contains(right))
             {
                 queue.Enqueue((row, col + 1, distance + 1));
             }
         }
 
-        return maxDistance;
+        return (visited, maxDistance);
     }
 
-    private static string DrawGrid(Dictionary<(int row, int col), char> grid)
+    private static int CountPointsInsideLoop(
+        IReadOnlySet<(int row, int col)> loop,
+        Dictionary<(int row, int col), char> grid)
     {
-        var sb = new StringBuilder();
-        var rows = grid.Keys.Select(k => k.row).Distinct().OrderBy(r => r).ToList();
-        var cols = grid.Keys.Select(k => k.col).Distinct().OrderBy(c => c).ToList();
+        var count = 0;
+        var maxRow = grid.Keys.Max(x => x.row);
+        var maxCol = grid.Keys.Max(x => x.col);
 
-        foreach (var row in rows)
+        for (var row = 0; row <= maxRow; row++)
         {
-            foreach (var col in cols)
-            {
-                sb.Append(grid[(row, col)]);
-            }
+            var inside = false;
 
-            sb.AppendLine();
+            for (var col = 0; col <= maxCol; col++)
+            {
+                if (loop.Contains((row, col)))
+                {
+                    if ("|JL".Contains(grid[(row, col)]))
+                    {
+                        inside = !inside;
+                    }
+                }
+                else
+                {
+                    if (inside)
+                    {
+                        count++;
+                    }
+                }
+            }
         }
 
-        return sb.ToString();
-    }
-
-    public static int Solve2(string[] input)
-    {
-        return 0;
+        return count;
     }
 }
