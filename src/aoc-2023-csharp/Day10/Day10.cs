@@ -1,4 +1,6 @@
-﻿namespace aoc_2023_csharp.Day10;
+﻿using System.Text;
+
+namespace aoc_2023_csharp.Day10;
 
 public static class Day10
 {
@@ -8,18 +10,28 @@ public static class Day10
 
     public static int Part2() => Solve2(Input);
 
-    public static int Solve1(string[] input)
+    public static int Solve1(string[] input, bool drawLoop = false)
     {
         var grid = BuildGrid(input);
-        var (_, maxDistance) = BuildLoop(grid);
+        var (loop, maxDistance) = BuildLoop(grid);
+
+        if (drawLoop)
+        {
+            Console.WriteLine(DrawLoop(loop, grid));
+        }
 
         return maxDistance;
     }
 
-    public static int Solve2(string[] input)
+    public static int Solve2(string[] input, bool drawLoop = false)
     {
         var grid = BuildGrid(input);
         var (loop, _) = BuildLoop(grid);
+
+        if (drawLoop)
+        {
+            Console.WriteLine(DrawLoop(loop, grid));
+        }
 
         return GetPointsInsideLoop(loop, grid).Count();
     }
@@ -149,4 +161,38 @@ public static class Day10
         // TODO: This is a naive implementation, but it works for the examples and my input
         // (it assumes that 'S' is always located at an 'F' or a '7', which is true for the examples and my input)
         "|LJ".Contains(grid[(row, col)]);
+
+    private static string DrawLoop(IReadOnlySet<(int row, int col)> loop, Dictionary<(int row, int col), char> grid)
+    {
+        var maxRow = grid.Keys.Max(x => x.row);
+        var maxCol = grid.Keys.Max(x => x.col);
+
+        var sb = new StringBuilder();
+
+        for (var row = 0; row <= maxRow; row++)
+        {
+            for (var col = 0; col <= maxCol; col++)
+            {
+                sb.Append(loop.Contains((row, col))
+                    ? GetSymbolFor(grid[(row, col)])
+                    : '.');
+            }
+
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
+
+    private static char GetSymbolFor(char c) => c switch
+    {
+        'S' => 'S',
+        'F' => '\u250C',
+        '7' => '\u2510',
+        'L' => '\u2514',
+        'J' => '\u2518',
+        '-' => '\u2500',
+        '|' => '\u2502',
+        _ => '?',
+    };
 }

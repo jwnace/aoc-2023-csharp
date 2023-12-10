@@ -23,7 +23,7 @@ public class Day10Tests
     public void Part1_Example(string[] input, int expected)
     {
         // act
-        var actual = Day10.Solve1(input);
+        var actual = Day10.Solve1(input, drawLoop: true);
 
         // assert
         actual.Should().Be(expected);
@@ -88,7 +88,7 @@ public class Day10Tests
     public void Part2_Example(string[] input, int expected)
     {
         // act
-        var actual = Day10.Solve2(input);
+        var actual = Day10.Solve2(input, drawLoop: true);
 
         // assert
         actual.Should().Be(expected);
