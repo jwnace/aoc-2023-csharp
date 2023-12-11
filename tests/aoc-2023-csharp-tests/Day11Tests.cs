@@ -8,8 +8,21 @@ public class Day11Tests
     public void Part1_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            "...#......",
+            ".......#..",
+            "#.........",
+            "..........",
+            "......#...",
+            ".#........",
+            ".........#",
+            "..........",
+            ".......#..",
+            "#...#.....",
+        };
+
+        var expected = 374;
 
         // act
         var actual = Day11.Solve1(input);
@@ -21,14 +34,18 @@ public class Day11Tests
     [Test]
     public void Part1_Solution()
     {
-        Day11.Part1().Should().Be(0);
+        Day11.Part1().Should().Be(9521550);
     }
 
     [Test]
     public void Part2_Example()
     {
         // arrange
-        var input = "";
+        var input = new[]
+        {
+            "",
+        };
+
         var expected = 0;
 
         // act
