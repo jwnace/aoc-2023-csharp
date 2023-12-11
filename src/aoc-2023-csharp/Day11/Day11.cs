@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace aoc_2023_csharp.Day11;
+﻿namespace aoc_2023_csharp.Day11;
 
 public static class Day11
 {
@@ -10,53 +8,25 @@ public static class Day11
 
     public static long Part2() => Solve2(Input);
 
-    public static long Solve1(string[] input)
+    public static long Solve1(string[] input) => Solve(input, 1);
+
+    public static long Solve2(string[] input, int expansion = 999999) => Solve(input, expansion);
+
+    private static long Solve(IReadOnlyList<string> input, int expansion)
     {
         var grid = BuildGrid(input);
 
-        var minRow = grid.Keys.Min(x => x.row);
-        var maxRow = grid.Keys.Max(x => x.row);
-        var minCol = grid.Keys.Min(x => x.col);
-        var maxCol = grid.Keys.Max(x => x.col);
+        ExpandRows(grid, expansion);
+        ExpandColumns(grid, expansion);
 
-        Console.WriteLine(DrawGrid(grid));
-        Console.WriteLine();
-
-        ExpandRows(minRow, maxRow, grid);
-        ExpandColumns(minRow, maxRow, grid);
-
-        Console.WriteLine(DrawGrid(grid));
-        Console.WriteLine();
-
-        var points = grid.Keys.ToArray();
-        var total = 0L;
-
-        for (var i = 0L; i < points.Length - 1; i++)
-        {
-            for (var j = i + 1; j < points.Length; j++)
-            {
-                var start = points[i];
-                var end = points[j];
-
-                // find the shortest distance from start to end
-                var distance = Math.Abs(start.row - end.row) + Math.Abs(start.col - end.col);
-                total += distance;
-            }
-        }
-
-        return total;
+        return SumDistances(grid);
     }
 
-    public static long Solve2(string[] input)
-    {
-        return 0;
-    }
-
-    private static Dictionary<(long row, long col), char> BuildGrid(string[] input)
+    private static Dictionary<(long row, long col), char> BuildGrid(IReadOnlyList<string> input)
     {
         var grid = new Dictionary<(long row, long col), char>();
 
-        for (var row = 0; row < input.Length; row++)
+        for (var row = 0; row < input.Count; row++)
         {
             for (var col = 0; col < input[row].Length; col++)
             {
@@ -70,24 +40,26 @@ public static class Day11
         return grid;
     }
 
-    private static void ExpandRows(long minRow, long maxRow, Dictionary<(long row, long col), char> grid)
+    private static void ExpandRows(Dictionary<(long row, long col), char> grid, int amount = 1)
     {
-        // expand rows
+        var minRow = grid.Keys.Min(x => x.row);
+        var maxRow = grid.Keys.Max(x => x.row);
+
         var pointsToMove = new Dictionary<(long row, long col), long>();
 
         for (var row = minRow; row <= maxRow; row++)
         {
-            // if there are no galaxies in this row
-            if (grid.Keys.All(x => x.row != row))
+            if (grid.Keys.Any(x => x.row == row))
             {
-                // find all the points that need to be moved down
-                var pointsToMoveQuery = grid.Where(x => x.Key.row > row).ToArray();
+                continue;
+            }
 
-                foreach (var point in pointsToMoveQuery)
-                {
-                    var value = pointsToMove.GetValueOrDefault(point.Key);
-                    pointsToMove[point.Key] = value + 1;
-                }
+            var pointsToMoveQuery = grid.Where(x => x.Key.row > row).ToArray();
+
+            foreach (var point in pointsToMoveQuery)
+            {
+                var value = pointsToMove.GetValueOrDefault(point.Key);
+                pointsToMove[point.Key] = value + amount;
             }
         }
 
@@ -98,24 +70,26 @@ public static class Day11
         }
     }
 
-    private static void ExpandColumns(long minRow, long maxRow, Dictionary<(long row, long col), char> grid)
+    private static void ExpandColumns(Dictionary<(long row, long col), char> grid, int amount = 1)
     {
-        // expand columns
+        var minCol = grid.Keys.Min(x => x.col);
+        var maxCol = grid.Keys.Max(x => x.col);
+
         var pointsToMove = new Dictionary<(long row, long col), long>();
 
-        for (var col = minRow; col <= maxRow; col++)
+        for (var col = minCol; col <= maxCol; col++)
         {
-            // if there are no galaxies in this row
-            if (grid.Keys.All(x => x.col != col))
+            if (grid.Keys.Any(x => x.col == col))
             {
-                // find all the points that need to be moved down
-                var pointsToMoveQuery = grid.Where(x => x.Key.col > col).ToArray();
+                continue;
+            }
 
-                foreach (var point in pointsToMoveQuery)
-                {
-                    var value = pointsToMove.GetValueOrDefault(point.Key);
-                    pointsToMove[point.Key] = value + 1;
-                }
+            var pointsToMoveQuery = grid.Where(x => x.Key.col > col).ToArray();
+
+            foreach (var point in pointsToMoveQuery)
+            {
+                var value = pointsToMove.GetValueOrDefault(point.Key);
+                pointsToMove[point.Key] = value + amount;
             }
         }
 
@@ -126,32 +100,22 @@ public static class Day11
         }
     }
 
-    private static string DrawGrid(Dictionary<(long row, long col), char> grid)
+    private static long SumDistances(Dictionary<(long row, long col), char> grid)
     {
-        var minRow = grid.Keys.Min(x => x.row);
-        var maxRow = grid.Keys.Max(x => x.row);
-        var minCol = grid.Keys.Min(x => x.col);
-        var maxCol = grid.Keys.Max(x => x.col);
+        var galaxies = grid.Keys.ToArray();
+        var total = 0L;
 
-        var sb = new StringBuilder();
-
-        for (var row = minRow; row <= maxRow; row++)
+        for (var i = 0L; i < galaxies.Length - 1; i++)
         {
-            for (var col = minCol; col <= maxCol; col++)
+            for (var j = i + 1; j < galaxies.Length; j++)
             {
-                if (grid.TryGetValue((row, col), out var value))
-                {
-                    sb.Append(value);
-                }
-                else
-                {
-                    sb.Append('.');
-                }
+                var start = galaxies[i];
+                var end = galaxies[j];
+                var distance = Math.Abs(start.row - end.row) + Math.Abs(start.col - end.col);
+                total += distance;
             }
-
-            sb.AppendLine();
         }
 
-        return sb.ToString();
+        return total;
     }
 }
