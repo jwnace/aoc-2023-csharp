@@ -8,8 +8,17 @@ public class Day12Tests
     public void Part1_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            "???.### 1,1,3",
+            ".??..??...?##. 1,1,3",
+            "?#?#?#?#?#?#?#? 1,3,1,6",
+            "????.#...#... 4,1,1",
+            "????.######..#####. 1,6,5",
+            "?###???????? 3,2,1",
+        };
+
+        var expected = 21;
 
         // act
         var actual = Day12.Solve1(input);
@@ -21,15 +30,24 @@ public class Day12Tests
     [Test]
     public void Part1_Solution()
     {
-        Day12.Part1().Should().Be(0);
+        Day12.Part1().Should().Be(7732);
     }
 
     [Test]
     public void Part2_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            "???.### 1,1,3",
+            ".??..??...?##. 1,1,3",
+            "?#?#?#?#?#?#?#? 1,3,1,6",
+            "????.#...#... 4,1,1",
+            "????.######..#####. 1,6,5",
+            "?###???????? 3,2,1",
+        };
+
+        var expected = 525152;
 
         // act
         var actual = Day12.Solve2(input);
@@ -41,6 +59,6 @@ public class Day12Tests
     [Test]
     public void Part2_Solution()
     {
-        Day12.Part2().Should().Be(0);
+        Day12.Part2().Should().Be(4500070301581);
     }
 }
