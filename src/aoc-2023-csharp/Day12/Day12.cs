@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using aoc_2023_csharp.Extensions;
+﻿using aoc_2023_csharp.Extensions;
 
 namespace aoc_2023_csharp.Day12;
 
@@ -7,105 +6,106 @@ public static class Day12
 {
     private static readonly string[] Input = File.ReadAllLines("Day12/day12.txt").ToArray();
 
-    public static int Part1() => Solve1(Input);
+    public static long Part1() => Solve1(Input);
 
-    public static int Part2() => Solve2(Input);
+    public static long Part2() => Solve2(Input);
 
-    public static int Solve1(string[] input)
+    public static long Solve1(string[] input)
     {
-        var total = 0;
+        var total = 0L;
 
-        for (var lineNumber = 0; lineNumber < input.Length; lineNumber++)
+        foreach (var line in input)
         {
-            Console.WriteLine(
-                $"Processing line {lineNumber + 1} out of {input.Length} = {lineNumber / (double)input.Length:P}");
+            var (left, right) = line.Split(' ');
 
-            var line = input[lineNumber];
-            total += CountWays(line);
+            var springs = left.ToCharArray();
+            var groups = right.Split(',').Select(int.Parse).ToArray();
+
+            total += new Solver().Solve(springs, groups, 0, 0, 0);
         }
 
         return total;
     }
 
-    public static int Solve2(string[] input)
+    public static long Solve2(string[] input)
     {
-        return 0;
-    }
+        var total = 0L;
 
-    private static int CountWays(string line)
-    {
-        var (left, right) = line.Split(" ");
-        var numbers = right.Split(",").Select(int.Parse).ToArray();
-
-        var leftIndexed = left.Select((c, i) => (c, i)).ToArray();
-
-        var operational = leftIndexed.Where(spring => spring.c == '.');
-        var damaged = leftIndexed.Where(spring => spring.c == '#');
-        var unknown = leftIndexed.Where(spring => spring.c == '?');
-
-        var totalDamaged = numbers.Sum();
-        var missingDamaged = totalDamaged - damaged.Count();
-
-        var possibilities = GeneratePossibilities(left, missingDamaged).ToList();
-
-        var count = 0;
-
-        foreach (var possibility in possibilities)
+        foreach (var line in input)
         {
-            var temp = possibility.Split('.', StringSplitOptions.RemoveEmptyEntries);
+            var (left, right) = line.Split(' ');
 
-            if (temp.Length == numbers.Length && temp.Select(x => x.Length).SequenceEqual(numbers))
-            {
-                count++;
-            }
+            left = string.Join('?', left, left, left, left, left);
+            right = string.Join(',', right, right, right, right, right);
+
+            var springs = left.ToCharArray();
+            var groups = right.Split(',').Select(int.Parse).ToArray();
+
+            total += new Solver().Solve(springs, groups, 0, 0, 0);
         }
 
-        return count;
+        return total;
     }
 
-    private static IEnumerable<string> GeneratePossibilities(string original, int missingDamaged)
+    private class Solver
     {
-        var queue = new Queue<(string, int, int)>();
-        queue.Enqueue((original, missingDamaged, 0));
+        private readonly Dictionary<(int, int, int), long> _memo = new();
 
-        var seen = new HashSet<string>();
-
-        while (queue.Any())
+        public long Solve(char[] springs, int[] groups, int springIndex, int groupIndex, int groupSize)
         {
-            var (current, missing, index) = queue.Dequeue();
+            var key = (springIndex, groupIndex, groupSize);
 
-            if (missing == 0)
+            if (_memo.TryGetValue(key, out var value))
             {
-                var result = current.Replace('?', '.');
+                return value;
+            }
 
-                if (!seen.Add(result))
+            if (springIndex == springs.Length)
+            {
+                if (groupIndex == groups.Length && groupSize == 0)
+                {
+                    return 1;
+                }
+
+                if (groupIndex == groups.Length - 1 && groups[groupIndex] == groupSize)
+                {
+                    return 1;
+                }
+
+                return 0;
+            }
+
+            long result = 0;
+
+            foreach (var c in ".#")
+            {
+                if (springs[springIndex] != c && springs[springIndex] != '?')
                 {
                     continue;
                 }
 
-                yield return result;
-            }
-            else
-            {
-                for (var i = index; i < current.Length; i++)
+                switch (c)
                 {
-                    if (current[i] == '?')
+                    case '.' when groupSize == 0:
                     {
-                        queue.Enqueue((current.ReplaceAt(i, '#'), missing - 1, i + 1));
-                        queue.Enqueue((current.ReplaceAt(i, '.'), missing, i + 1));
+                        result += Solve(springs, groups, springIndex + 1, groupIndex, 0);
+                        break;
+                    }
+                    case '.' when groupSize > 0 && groupIndex < groups.Length && groups[groupIndex] == groupSize:
+                    {
+                        result += Solve(springs, groups, springIndex + 1, groupIndex + 1, 0);
+                        break;
+                    }
+                    case '#':
+                    {
+                        result += Solve(springs, groups, springIndex + 1, groupIndex, groupSize + 1);
+                        break;
                     }
                 }
             }
-        }
-    }
-}
 
-public static class StringExtensions
-{
-    public static string ReplaceAt(this string str, int index, char newChar)
-    {
-        var chars = str.ToCharArray();
-        chars[index] = newChar;
-        return new string(chars);
+            _memo[key] = result;
+            return result;
+        }
     }
 }

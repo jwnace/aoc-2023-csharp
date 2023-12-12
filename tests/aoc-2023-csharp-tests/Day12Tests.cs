@@ -39,10 +39,15 @@ public class Day12Tests
         // arrange
         var input = new[]
         {
-            "",
+            "???.### 1,1,3",
+            ".??..??...?##. 1,1,3",
+            "?#?#?#?#?#?#?#? 1,3,1,6",
+            "????.#...#... 4,1,1",
+            "????.######..#####. 1,6,5",
+            "?###???????? 3,2,1",
         };
 
-        var expected = 0;
+        var expected = 525152;
 
         // act
         var actual = Day12.Solve2(input);
@@ -54,6 +59,6 @@ public class Day12Tests
     [Test]
     public void Part2_Solution()
     {
-        Day12.Part2().Should().Be(0);
+        Day12.Part2().Should().Be(4500070301581);
     }
 }
