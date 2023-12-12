@@ -10,64 +10,49 @@ public static class Day12
 
     public static long Part2() => Solve2(Input);
 
-    public static long Solve1(string[] input)
-    {
-        var total = 0L;
+    public static long Solve1(string[] input) =>
+        input.Sum(line => new Solver(line).Solve());
 
-        foreach (var line in input)
-        {
-            var (left, right) = line.Split(' ');
-
-            var springs = left.ToCharArray();
-            var groups = right.Split(',').Select(int.Parse).ToArray();
-
-            total += new Solver().Solve(springs, groups, 0, 0, 0);
-        }
-
-        return total;
-    }
-
-    public static long Solve2(string[] input)
-    {
-        var total = 0L;
-
-        foreach (var line in input)
-        {
-            var (left, right) = line.Split(' ');
-
-            left = string.Join('?', left, left, left, left, left);
-            right = string.Join(',', right, right, right, right, right);
-
-            var springs = left.ToCharArray();
-            var groups = right.Split(',').Select(int.Parse).ToArray();
-
-            total += new Solver().Solve(springs, groups, 0, 0, 0);
-        }
-
-        return total;
-    }
+    public static long Solve2(string[] input) =>
+        input.Sum(line => new Solver(line, unfold: true).Solve());
 
     private class Solver
     {
         private readonly Dictionary<(int, int, int), long> _memo = new();
+        private readonly char[] _springs;
+        private readonly int[] _groups;
 
-        public long Solve(char[] springs, int[] groups, int springIndex, int groupIndex, int groupSize)
+        public Solver(string line, bool unfold = false)
         {
-            var key = (springIndex, groupIndex, groupSize);
+            var (left, right) = line.Split(' ');
+
+            if (unfold)
+            {
+                left = string.Join("?", left, left, left, left, left);
+                right = string.Join(",", right, right, right, right, right);
+            }
+
+            _springs = left.ToCharArray();
+            _groups = right.Split(',').Select(int.Parse).ToArray();
+        }
+
+        public long Solve(int springIndex = 0, int groupIndex = 0, int currentLength = 0)
+        {
+            var key = (springIndex, groupIndex, currentLength);
 
             if (_memo.TryGetValue(key, out var value))
             {
                 return value;
             }
 
-            if (springIndex == springs.Length)
+            if (springIndex == _springs.Length)
             {
-                if (groupIndex == groups.Length && groupSize == 0)
+                if (groupIndex == _groups.Length && currentLength == 0)
                 {
                     return 1;
                 }
 
-                if (groupIndex == groups.Length - 1 && groups[groupIndex] == groupSize)
+                if (groupIndex == _groups.Length - 1 && _groups[groupIndex] == currentLength)
                 {
                     return 1;
                 }
@@ -75,33 +60,24 @@ public static class Day12
                 return 0;
             }
 
-            long result = 0;
+            var result = 0L;
 
-            foreach (var c in ".#")
+            if (_springs[springIndex] is '.' or '?' && currentLength == 0)
             {
-                if (springs[springIndex] != c && springs[springIndex] != '?')
-                {
-                    continue;
-                }
+                result += Solve(springIndex + 1, groupIndex, 0);
+            }
 
-                switch (c)
-                {
-                    case '.' when groupSize == 0:
-                    {
-                        result += Solve(springs, groups, springIndex + 1, groupIndex, 0);
-                        break;
-                    }
-                    case '.' when groupSize > 0 && groupIndex < groups.Length && groups[groupIndex] == groupSize:
-                    {
-                        result += Solve(springs, groups, springIndex + 1, groupIndex + 1, 0);
-                        break;
-                    }
-                    case '#':
-                    {
-                        result += Solve(springs, groups, springIndex + 1, groupIndex, groupSize + 1);
-                        break;
-                    }
-                }
+            if (_springs[springIndex] is '.' or '?' &&
+                currentLength > 0 &&
+                groupIndex < _groups.Length &&
+                _groups[groupIndex] == currentLength)
+            {
+                result += Solve(springIndex + 1, groupIndex + 1, 0);
+            }
+
+            if (_springs[springIndex] is '#' or '?')
+            {
+                result += Solve(springIndex + 1, groupIndex, currentLength + 1);
             }
 
             _memo[key] = result;
