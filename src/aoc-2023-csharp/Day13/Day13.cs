@@ -12,83 +12,99 @@ public static class Day13
 
     public static int Solve2(string input) => Solve(input, tolerance: 1);
 
-    private static int Solve(string input, int tolerance = 0)
+    private static int Solve(string input, int tolerance = 0) =>
+        input.Split("\n\n").Sum(pattern => ProcessPattern(pattern, tolerance));
+
+    private static int ProcessPattern(string pattern, int tolerance)
+    {
+        var lines = pattern.Split("\n");
+        var grid = BuildGrid(lines);
+
+        return ProcessRows(grid, tolerance) + ProcessColumns(grid, tolerance);
+    }
+
+    private static int ProcessRows(Dictionary<(int row, int col), char> grid, int tolerance)
     {
         var result = 0;
-        var patterns = input.Split("\n\n");
 
-        foreach (var pattern in patterns)
+        var minRow = grid.Keys.Min(k => k.row);
+        var maxRow = grid.Keys.Max(k => k.row);
+        var minCol = grid.Keys.Min(k => k.col);
+        var maxCol = grid.Keys.Max(k => k.col);
+
+        for (var row = minRow; row < maxRow; row++)
         {
-            var lines = pattern.Split("\n");
-            var grid = BuildGrid(lines);
+            var mismatchCount = 0;
 
-            var minRow = grid.Keys.Min(k => k.row);
-            var maxRow = grid.Keys.Max(k => k.row);
-            var minCol = grid.Keys.Min(k => k.col);
-            var maxCol = grid.Keys.Max(k => k.col);
-
-            for (var row = minRow; row < maxRow; row++)
+            for (var offset = 0; offset < maxRow; offset++)
             {
-                var mismatchCount = 0;
+                var top = row - offset;
+                var bottom = row + 1 + offset;
 
-                for (var offset = 0; offset < maxRow; offset++)
+                if (top < 0 || bottom > maxRow)
                 {
-                    var top = row - offset;
-                    var bottom = row + 1 + offset;
-
-                    if (top < 0 || bottom > maxRow)
-                    {
-                        break;
-                    }
-
-                    var topRow = grid.Where(x => x.Key.row == top).Select(x => x.Value).ToArray();
-                    var bottomRow = grid.Where(x => x.Key.row == bottom).Select(x => x.Value).ToArray();
-
-                    for (var col = minCol; col <= maxCol; col++)
-                    {
-                        if (topRow[col] != bottomRow[col])
-                        {
-                            mismatchCount++;
-                        }
-                    }
+                    break;
                 }
 
-                if (mismatchCount == tolerance)
+                var topRow = grid.Where(x => x.Key.row == top).Select(x => x.Value).ToArray();
+                var bottomRow = grid.Where(x => x.Key.row == bottom).Select(x => x.Value).ToArray();
+
+                for (var col = minCol; col <= maxCol; col++)
                 {
-                    result += 100 * (row + 1);
+                    if (topRow[col] != bottomRow[col])
+                    {
+                        mismatchCount++;
+                    }
                 }
             }
 
-            for (var col = minCol; col < maxCol; col++)
+            if (mismatchCount == tolerance)
             {
-                var mismatchCount = 0;
+                result += 100 * (row + 1);
+            }
+        }
 
-                for (var offset = 0; offset < maxCol; offset++)
+        return result;
+    }
+
+    private static int ProcessColumns(Dictionary<(int row, int col), char> grid, int tolerance)
+    {
+        var result = 0;
+
+        var minRow = grid.Keys.Min(k => k.row);
+        var maxRow = grid.Keys.Max(k => k.row);
+        var minCol = grid.Keys.Min(k => k.col);
+        var maxCol = grid.Keys.Max(k => k.col);
+
+        for (var col = minCol; col < maxCol; col++)
+        {
+            var mismatchCount = 0;
+
+            for (var offset = 0; offset < maxCol; offset++)
+            {
+                var left = col - offset;
+                var right = col + 1 + offset;
+
+                if (left < 0 || right > maxCol)
                 {
-                    var left = col - offset;
-                    var right = col + 1 + offset;
-
-                    if (left < 0 || right > maxCol)
-                    {
-                        break;
-                    }
-
-                    var leftCol = grid.Where(x => x.Key.col == left).Select(x => x.Value).ToArray();
-                    var rightCol = grid.Where(x => x.Key.col == right).Select(x => x.Value).ToArray();
-
-                    for (var row = minRow; row <= maxRow; row++)
-                    {
-                        if (leftCol[row] != rightCol[row])
-                        {
-                            mismatchCount++;
-                        }
-                    }
+                    break;
                 }
 
-                if (mismatchCount == tolerance)
+                var leftCol = grid.Where(x => x.Key.col == left).Select(x => x.Value).ToArray();
+                var rightCol = grid.Where(x => x.Key.col == right).Select(x => x.Value).ToArray();
+
+                for (var row = minRow; row <= maxRow; row++)
                 {
-                    result += col + 1;
+                    if (leftCol[row] != rightCol[row])
+                    {
+                        mismatchCount++;
+                    }
                 }
+            }
+
+            if (mismatchCount == tolerance)
+            {
+                result += col + 1;
             }
         }
 
