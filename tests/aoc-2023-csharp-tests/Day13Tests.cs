@@ -8,8 +8,26 @@ public class Day13Tests
     public void Part1_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input =
+            """
+            #.##..##.
+            ..#.##.#.
+            ##......#
+            ##......#
+            ..#.##.#.
+            ..##..##.
+            #.#.##.#.
+
+            #...##..#
+            #....#..#
+            ..##..###
+            #####.##.
+            #####.##.
+            ..##..###
+            #....#..#
+            """;
+
+        var expected = 405;
 
         // act
         var actual = Day13.Solve1(input);
@@ -21,15 +39,33 @@ public class Day13Tests
     [Test]
     public void Part1_Solution()
     {
-        Day13.Part1().Should().Be(0);
+        Day13.Part1().Should().Be(31956);
     }
 
     [Test]
     public void Part2_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input =
+            """
+            #.##..##.
+            ..#.##.#.
+            ##......#
+            ##......#
+            ..#.##.#.
+            ..##..##.
+            #.#.##.#.
+
+            #...##..#
+            #....#..#
+            ..##..###
+            #####.##.
+            #####.##.
+            ..##..###
+            #....#..#
+            """;
+
+        var expected = 400;
 
         // act
         var actual = Day13.Solve2(input);
@@ -41,6 +77,6 @@ public class Day13Tests
     [Test]
     public void Part2_Solution()
     {
-        Day13.Part2().Should().Be(0);
+        Day13.Part2().Should().Be(37617);
     }
 }
