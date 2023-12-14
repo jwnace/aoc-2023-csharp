@@ -14,14 +14,9 @@ public static class Day14
     {
         var grid = BuildGrid(input);
 
-        var minRow = grid.Keys.Min(x => x.row);
-        var maxRow = grid.Keys.Max(x => x.row);
-        var minCol = grid.Keys.Min(x => x.col);
-        var maxCol = grid.Keys.Max(x => x.col);
-
         TiltNorth(grid);
 
-        return grid.Where(x => x.Value == 'O').Sum(x => maxRow - x.Key.row + 1);
+        return CalculateTotalLoad(grid);
     }
 
     public static int Solve2(string[] input)
@@ -29,34 +24,28 @@ public static class Day14
         var grid = BuildGrid(input);
         var seen = new Dictionary<string, int>();
 
-        var minRow = grid.Keys.Min(x => x.row);
-        var maxRow = grid.Keys.Max(x => x.row);
-        var minCol = grid.Keys.Min(x => x.col);
-        var maxCol = grid.Keys.Max(x => x.col);
-
         for (var step = 0; step < 1_000_000_000; step++)
         {
-            TiltNorth(grid);
-            TiltWest(grid);
-            TiltSouth(grid);
-            TiltEast(grid);
+            SpinCycle(grid);
 
-            if (seen.TryGetValue(DrawGrid(grid), out var value))
+            var gridString = DrawGrid(grid);
+
+            if (seen.TryGetValue(gridString, out var value))
             {
                 var cycleLength = step - value;
-                var remainingCycles = 1_000_000_000 - step;
-                var cyclesToSkip = remainingCycles % cycleLength;
-                var stepsToSkip = remainingCycles - cyclesToSkip;
+                var remainingSteps = 1_000_000_000 - step;
+                var cyclesToSkip = remainingSteps / cycleLength;
+                var stepsToSkip = cyclesToSkip * cycleLength;
 
                 step += stepsToSkip;
             }
             else
             {
-                seen[DrawGrid(grid)] = step;
+                seen[gridString] = step;
             }
         }
 
-        return grid.Where(x => x.Value == 'O').Sum(x => maxRow - x.Key.row + 1);
+        return CalculateTotalLoad(grid);
     }
 
     private static Dictionary<(int row, int col), char> BuildGrid(string[] input)
@@ -178,6 +167,14 @@ public static class Day14
         }
     }
 
+    private static void SpinCycle(Dictionary<(int row, int col), char> grid)
+    {
+        TiltNorth(grid);
+        TiltWest(grid);
+        TiltSouth(grid);
+        TiltEast(grid);
+    }
+
     private static string DrawGrid(Dictionary<(int row, int col), char> grid)
     {
         var sb = new StringBuilder();
@@ -195,5 +192,11 @@ public static class Day14
         }
 
         return sb.ToString();
+    }
+
+    private static int CalculateTotalLoad(Dictionary<(int row, int col), char> grid)
+    {
+        var maxRow = grid.Keys.Max(x => x.row);
+        return grid.Where(x => x.Value == 'O').Sum(x => maxRow - x.Key.row + 1);
     }
 }
