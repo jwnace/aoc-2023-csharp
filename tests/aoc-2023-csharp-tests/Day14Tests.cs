@@ -8,8 +8,21 @@ public class Day14Tests
     public void Part1_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            "O....#....",
+            "O.OO#....#",
+            ".....##...",
+            "OO.#O....O",
+            ".O.....O#.",
+            "O.#..O.#.#",
+            "..O..#O..O",
+            ".......O..",
+            "#....###..",
+            "#OO..#....",
+        };
+
+        var expected = 136;
 
         // act
         var actual = Day14.Solve1(input);
@@ -21,15 +34,28 @@ public class Day14Tests
     [Test]
     public void Part1_Solution()
     {
-        Day14.Part1().Should().Be(0);
+        Day14.Part1().Should().Be(106517);
     }
 
     [Test]
     public void Part2_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            "O....#....",
+            "O.OO#....#",
+            ".....##...",
+            "OO.#O....O",
+            ".O.....O#.",
+            "O.#..O.#.#",
+            "..O..#O..O",
+            ".......O..",
+            "#....###..",
+            "#OO..#....",
+        };
+
+        var expected = 64;
 
         // act
         var actual = Day14.Solve2(input);
@@ -41,6 +67,6 @@ public class Day14Tests
     [Test]
     public void Part2_Solution()
     {
-        Day14.Part2().Should().Be(0);
+        Day14.Part2().Should().Be(79723);
     }
 }
