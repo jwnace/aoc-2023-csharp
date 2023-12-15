@@ -12,13 +12,8 @@ public static class Day15
 
     public static int Solve2(string input)
     {
-        var boxes = new List<string>[256];
         var steps = input.Split(",");
-
-        for (var i = 0; i < 256; i++)
-        {
-            boxes[i] = new List<string>();
-        }
+        var boxes = InitializeBoxes();
 
         foreach (var step in steps)
         {
@@ -29,11 +24,11 @@ public static class Day15
 
             if (operation == '-')
             {
-                var temp = boxes[box].SingleOrDefault(l => l.Split(' ')[0] == label);
+                var existingLens = boxes[box].SingleOrDefault(l => l.Split(' ')[0] == label);
 
-                if (temp is not null)
+                if (existingLens is not null)
                 {
-                    boxes[box].Remove(temp);
+                    boxes[box].Remove(existingLens);
                 }
             }
             else if (operation == '=')
@@ -55,9 +50,40 @@ public static class Day15
             }
         }
 
+        return ComputeResult(boxes);
+    }
+
+    private static int ComputeHash(string step)
+    {
         var result = 0;
 
-        for (var i = 0; i < boxes.Length; i++)
+        foreach (var c in step)
+        {
+            result += c;
+            result *= 17;
+            result %= 256;
+        }
+
+        return result;
+    }
+
+    private static List<string>[] InitializeBoxes()
+    {
+        var boxes = new List<string>[256];
+
+        for (var i = 0; i < 256; i++)
+        {
+            boxes[i] = new List<string>();
+        }
+
+        return boxes;
+    }
+
+    private static int ComputeResult(IReadOnlyList<List<string>> boxes)
+    {
+        var result = 0;
+
+        for (var i = 0; i < boxes.Count; i++)
         {
             var box = boxes[i];
 
@@ -65,23 +91,8 @@ public static class Day15
             {
                 var lens = box[j];
                 var focalLength = int.Parse(lens.Split(' ')[1]);
-                result += (i + 1) * (j + 1) * (focalLength);
+                result += (i + 1) * (j + 1) * focalLength;
             }
-        }
-
-        return result;
-    }
-
-    private static int ComputeHash(string input)
-    {
-        var result = 0;
-
-        foreach (var c in input)
-        {
-            var ascii = (int)c;
-            result += ascii;
-            result *= 17;
-            result %= 256;
         }
 
         return result;
