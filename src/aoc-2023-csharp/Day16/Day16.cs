@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace aoc_2023_csharp.Day16;
+﻿namespace aoc_2023_csharp.Day16;
 
 public static class Day16
 {
@@ -20,30 +18,32 @@ public static class Day16
     public static int Solve2(string[] input)
     {
         var grid = BuildGrid(input);
+        var minRow = grid.Keys.Min(x => x.row);
         var maxRow = grid.Keys.Max(x => x.row);
+        var minCol = grid.Keys.Min(x => x.col);
         var maxCol = grid.Keys.Max(x => x.col);
         var result = 0;
 
-        for (var row = 0; row <= maxRow; row++)
+        for (var row = minRow; row <= maxRow; row++)
         {
-            result = Math.Max(result, CountEnergizedTiles(grid, new Beam(row, 0, Direction.Right)));
+            result = Math.Max(result, CountEnergizedTiles(grid, new Beam(row, minCol, Direction.Right)));
             result = Math.Max(result, CountEnergizedTiles(grid, new Beam(row, maxCol, Direction.Left)));
         }
 
-        for (var col = 0; col <= maxCol; col++)
+        for (var col = minCol; col <= maxCol; col++)
         {
-            result = Math.Max(result, CountEnergizedTiles(grid, new Beam(0, col, Direction.Down)));
+            result = Math.Max(result, CountEnergizedTiles(grid, new Beam(minRow, col, Direction.Down)));
             result = Math.Max(result, CountEnergizedTiles(grid, new Beam(maxRow, col, Direction.Up)));
         }
 
         return result;
     }
 
-    private static Dictionary<(int row, int col), char> BuildGrid(string[] input)
+    private static Dictionary<(int row, int col), char> BuildGrid(IReadOnlyList<string> input)
     {
         var grid = new Dictionary<(int row, int col), char>();
 
-        for (var row = 0; row < input.Length; row++)
+        for (var row = 0; row < input.Count; row++)
         {
             for (var col = 0; col < input[row].Length; col++)
             {
@@ -56,7 +56,9 @@ public static class Day16
 
     private static int CountEnergizedTiles(Dictionary<(int row, int col), char> grid, Beam start)
     {
+        var minRow = grid.Keys.Min(x => x.row);
         var maxRow = grid.Keys.Max(x => x.row);
+        var minCol = grid.Keys.Min(x => x.col);
         var maxCol = grid.Keys.Max(x => x.col);
         var energizedTiles = new HashSet<(int row, int col)>();
         var queue = new Queue<Beam>();
@@ -74,7 +76,7 @@ public static class Day16
                 continue;
             }
 
-            if (row < 0 || row > maxRow || col < 0 || col > maxCol)
+            if (row < minRow || row > maxRow || col < minCol || col > maxCol)
             {
                 continue;
             }
