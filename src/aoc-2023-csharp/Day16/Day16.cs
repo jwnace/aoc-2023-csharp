@@ -1,4 +1,6 @@
-﻿namespace aoc_2023_csharp.Day16;
+﻿using System.Collections;
+
+namespace aoc_2023_csharp.Day16;
 
 public static class Day16
 {
@@ -81,85 +83,62 @@ public static class Day16
 
             switch (grid[(row, col)])
             {
-                case '.':
-                {
-                    var newBeam = direction switch
-                    {
-                        Direction.Up => beam with { Row = row - 1 },
-                        Direction.Down => beam with { Row = row + 1 },
-                        Direction.Left => beam with { Col = col - 1 },
-                        Direction.Right => beam with { Col = col + 1 },
-                    };
-
-                    queue.Enqueue(newBeam);
+                case '.' when direction is Direction.Up:
+                    queue.Enqueue(beam with { Row = row - 1 });
                     break;
-                }
-                case '|':
-                {
-                    switch (direction)
-                    {
-                        case Direction.Up:
-                            queue.Enqueue(beam with { Row = row - 1 });
-                            break;
-                        case Direction.Down:
-                            queue.Enqueue(beam with { Row = row + 1 });
-                            break;
-                        case Direction.Left:
-                        case Direction.Right:
-                            queue.Enqueue(new Beam(row - 1, col, Direction.Up));
-                            queue.Enqueue(new Beam(row + 1, col, Direction.Down));
-                            break;
-                    }
-
+                case '.' when direction is Direction.Down:
+                    queue.Enqueue(beam with { Row = row + 1 });
                     break;
-                }
-                case '-':
-                {
-                    switch (direction)
-                    {
-                        case Direction.Up:
-                        case Direction.Down:
-                            queue.Enqueue(new Beam(row, col - 1, Direction.Left));
-                            queue.Enqueue(new Beam(row, col + 1, Direction.Right));
-                            break;
-                        case Direction.Left:
-                            queue.Enqueue(beam with { Col = col - 1 });
-                            break;
-                        case Direction.Right:
-                            queue.Enqueue(beam with { Col = col + 1 });
-                            break;
-                    }
-
+                case '.' when direction is Direction.Left:
+                    queue.Enqueue(beam with { Col = col - 1 });
                     break;
-                }
-                case '/':
-                {
-                    var newBeam = direction switch
-                    {
-                        Direction.Up => new Beam(row, col + 1, Direction.Right),
-                        Direction.Down => new Beam(row, col - 1, Direction.Left),
-                        Direction.Left => new Beam(row + 1, col, Direction.Down),
-                        Direction.Right => new Beam(row - 1, col, Direction.Up),
-                        _ => throw new ArgumentOutOfRangeException()
-                    };
-
-                    queue.Enqueue(newBeam);
+                case '.' when direction is Direction.Right:
+                    queue.Enqueue(beam with { Col = col + 1 });
                     break;
-                }
-                case '\\':
-                {
-                    var newBeam = direction switch
-                    {
-                        Direction.Up => new Beam(row, col - 1, Direction.Left),
-                        Direction.Down => new Beam(row, col + 1, Direction.Right),
-                        Direction.Left => new Beam(row - 1, col, Direction.Up),
-                        Direction.Right => new Beam(row + 1, col, Direction.Down),
-                        _ => throw new ArgumentOutOfRangeException()
-                    };
-
-                    queue.Enqueue(newBeam);
+                case '|' when direction is Direction.Up:
+                    queue.Enqueue(beam with { Row = row - 1 });
                     break;
-                }
+                case '|' when direction is Direction.Down:
+                    queue.Enqueue(beam with { Row = row + 1 });
+                    break;
+                case '|' when direction is Direction.Left or Direction.Right:
+                    queue.Enqueue(new Beam(row - 1, col, Direction.Up));
+                    queue.Enqueue(new Beam(row + 1, col, Direction.Down));
+                    break;
+                case '-' when direction is Direction.Up or Direction.Down:
+                    queue.Enqueue(new Beam(row, col - 1, Direction.Left));
+                    queue.Enqueue(new Beam(row, col + 1, Direction.Right));
+                    break;
+                case '-' when direction is Direction.Left:
+                    queue.Enqueue(beam with { Col = col - 1 });
+                    break;
+                case '-' when direction is Direction.Right:
+                    queue.Enqueue(beam with { Col = col + 1 });
+                    break;
+                case '/' when direction is Direction.Up:
+                    queue.Enqueue(new Beam(row, col + 1, Direction.Right));
+                    break;
+                case '/' when direction is Direction.Down:
+                    queue.Enqueue(new Beam(row, col - 1, Direction.Left));
+                    break;
+                case '/' when direction is Direction.Left:
+                    queue.Enqueue(new Beam(row + 1, col, Direction.Down));
+                    break;
+                case '/' when direction is Direction.Right:
+                    queue.Enqueue(new Beam(row - 1, col, Direction.Up));
+                    break;
+                case '\\' when direction is Direction.Up:
+                    queue.Enqueue(new Beam(row, col - 1, Direction.Left));
+                    break;
+                case '\\' when direction is Direction.Down:
+                    queue.Enqueue(new Beam(row, col + 1, Direction.Right));
+                    break;
+                case '\\' when direction is Direction.Left:
+                    queue.Enqueue(new Beam(row - 1, col, Direction.Up));
+                    break;
+                case '\\' when direction is Direction.Right:
+                    queue.Enqueue(new Beam(row + 1, col, Direction.Down));
+                    break;
             }
         }
 
