@@ -8,8 +8,21 @@ public class Day16Tests
     public void Part1_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            @".|...\....",
+            @"|.-.\.....",
+            @".....|-...",
+            @"........|.",
+            @"..........",
+            @".........\",
+            @"..../.\\..",
+            @".-.-/..|..",
+            @".|....-|.\",
+            @"..//.|....",
+        };
+
+        var expected = 46;
 
         // act
         var actual = Day16.Solve1(input);
@@ -21,15 +34,28 @@ public class Day16Tests
     [Test]
     public void Part1_Solution()
     {
-        Day16.Part1().Should().Be(0);
+        Day16.Part1().Should().Be(8098);
     }
 
     [Test]
     public void Part2_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            @".|...\....",
+            @"|.-.\.....",
+            @".....|-...",
+            @"........|.",
+            @"..........",
+            @".........\",
+            @"..../.\\..",
+            @".-.-/..|..",
+            @".|....-|.\",
+            @"..//.|....",
+        };
+
+        var expected = 51;
 
         // act
         var actual = Day16.Solve2(input);
@@ -41,6 +67,6 @@ public class Day16Tests
     [Test]
     public void Part2_Solution()
     {
-        Day16.Part2().Should().Be(0);
+        Day16.Part2().Should().Be(8335);
     }
 }
