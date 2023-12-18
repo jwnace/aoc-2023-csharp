@@ -10,20 +10,13 @@ public static class Day18
 
     public static long Part2() => Solve2(Input);
 
-    public static long Solve1(string[] input)
+    public static long Solve1(string[] input) => Solve(input, 1);
+
+    public static long Solve2(string[] input) => Solve(input, 2);
+
+    private static long Solve(IEnumerable<string> input, int part)
     {
-        var instructions = ParseInstructions(input, 1).ToList();
-        var lagoon = BuildLoop(instructions);
-
-        // TODO: don't hardcode the starting point
-        FloodFill(lagoon, new Point(1, 1));
-
-        return lagoon.Count;
-    }
-
-    public static long Solve2(string[] input)
-    {
-        var instructions = ParseInstructions(input, 2).ToList();
+        var instructions = ParseInstructions(input, part).ToList();
         var polygon = BuildPolygon(instructions);
         var perimeter = CalculatePerimeter(polygon);
 
@@ -74,69 +67,6 @@ public static class Day18
         var color = colorString[1..^1];
 
         return (direction, distance, color);
-    }
-
-    private static HashSet<Point> BuildLoop(List<Instruction> instructions)
-    {
-        var loop = new HashSet<Point>();
-        var current = new Point(0, 0);
-
-        foreach (var instruction in instructions)
-        {
-            var (direction, distance) = instruction;
-
-            for (var i = 0; i < distance; i++)
-            {
-                current = direction switch
-                {
-                    Direction.Up => current with { Row = current.Row - 1 },
-                    Direction.Down => current with { Row = current.Row + 1 },
-                    Direction.Left => current with { Col = current.Col - 1 },
-                    Direction.Right => current with { Col = current.Col + 1 },
-                    _ => throw new Exception($"Unknown direction: {direction}")
-                };
-
-                loop.Add(current);
-            }
-        }
-
-        return loop;
-    }
-
-    private static void FloodFill(ISet<Point> loop, Point start)
-    {
-        var visited = new HashSet<Point>();
-        var queue = new Queue<Point>();
-        queue.Enqueue(start);
-
-        while (queue.Any())
-        {
-            var current = queue.Dequeue();
-            var (row, col) = current;
-
-            if (!visited.Add(current))
-            {
-                continue;
-            }
-
-            if (!loop.Add(current))
-            {
-                continue;
-            }
-
-            var neighbors = new[]
-            {
-                new Point(row - 1, col),
-                new Point(row + 1, col),
-                new Point(row, col - 1),
-                new Point(row, col + 1),
-            };
-
-            foreach (var neighbor in neighbors)
-            {
-                queue.Enqueue(neighbor);
-            }
-        }
     }
 
     private static List<Point> BuildPolygon(List<Instruction> instructions)
