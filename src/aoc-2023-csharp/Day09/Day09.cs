@@ -56,7 +56,7 @@ public static class Day09
 
         while (nextSequence.Any(n => n != 0))
         {
-            nextSequence = nextSequence.Windowed(2).Select(w => w.ToList()).Select(w => w[1] - w[0]).ToList();
+            nextSequence = nextSequence.Windowed(2).Select(w => w[1] - w[0]).ToList();
             sequences.Add(nextSequence);
         }
 
