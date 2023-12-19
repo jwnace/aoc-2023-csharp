@@ -12,63 +12,43 @@ public static class Day19
 
     public static int Solve1(string input)
     {
-        var sectionStrings = input.Split("\n\n");
-        var (workflowStrings, partStrings) = sectionStrings.Select(x => x.Split("\n")).ToArray();
+        var (workflows, parts) = ParseInput(input);
+        var acceptedParts = parts.Where(part => IsPartAccepted(part, workflows["in"], workflows)).ToList();
 
-        var workflows = workflowStrings.Select(Workflow.Parse).ToDictionary(w => w.Name, w => w);
-        var parts = partStrings.Select(Part.Parse);
-
-        var start = workflows["in"];
-
-        var acceptedParts = parts.Where(part => IsAccepted(part, start, workflows)).ToList();
-
-        return acceptedParts.Sum(x => x.X + x.M + x.A + x.S);
+        return acceptedParts.Sum(part => part.X + part.M + part.A + part.S);
     }
 
     public static long Solve2(string input)
     {
-        var sectionStrings = input.Split("\n\n");
-        var (workflowStrings, _) = sectionStrings.Select(x => x.Split("\n")).ToArray();
-        var workflows = workflowStrings.Select(Workflow.Parse).ToDictionary(w => w.Name, w => w);
-
+        var (workflows, _) = ParseInput(input);
         var partRange = new PartRange(1, 4000, 1, 4000, 1, 4000, 1, 4000);
+        var acceptedRanges = GetAcceptedRanges(partRange, workflows["in"], workflows);
 
-        var start = workflows["in"];
-
-        var processedRanges = GetAcceptedRanges(partRange, start, workflows);
-
-        var result = 0L;
-
-        foreach (var range in processedRanges)
-        {
-            var xRange = range.MaxX - range.MinX + 1;
-            var mRange = range.MaxM - range.MinM + 1;
-            var aRange = range.MaxA - range.MinA + 1;
-            var sRange = range.MaxS - range.MinS + 1;
-
-            result += xRange * mRange * aRange * sRange;
-        }
-
-        return result;
+        return acceptedRanges.Sum(range => range.Product);
     }
 
-    private static bool IsAccepted(Part part, Workflow workflow, Dictionary<string, Workflow> workflows)
+    private static (Dictionary<string, Workflow> workflows, IEnumerable<Part> parts) ParseInput(string input)
+    {
+        var sections = input.Split("\n\n");
+        var (workflowStrings, partStrings) = sections.Select(x => x.Split("\n")).ToArray();
+        var workflows = workflowStrings.Select(Workflow.Parse).ToDictionary(w => w.Name, w => w);
+        var parts = partStrings.Select(Part.Parse);
+
+        return (workflows, parts);
+    }
+
+    private static bool IsPartAccepted(Part part, Workflow workflow, IReadOnlyDictionary<string, Workflow> workflows)
     {
         foreach (var rule in workflow.Rules)
         {
             if (rule.Type == RuleType.GoTo)
             {
-                if (rule.NextWorkflowName == "A")
+                return rule.NextWorkflowName switch
                 {
-                    return true;
-                }
-
-                if (rule.NextWorkflowName == "R")
-                {
-                    return false;
-                }
-
-                return IsAccepted(part, workflows[rule.NextWorkflowName], workflows);
+                    "A" => true,
+                    "R" => false,
+                    _ => IsPartAccepted(part, workflows[rule.NextWorkflowName], workflows)
+                };
             }
 
             var value = rule.Category switch
@@ -87,20 +67,17 @@ public static class Day19
                 _ => throw new Exception("Invalid rule type")
             };
 
-            if (satisfiesCondition)
+            if (!satisfiesCondition)
             {
-                if (rule.NextWorkflowName == "A")
-                {
-                    return true;
-                }
-
-                if (rule.NextWorkflowName == "R")
-                {
-                    return false;
-                }
-
-                return IsAccepted(part, workflows[rule.NextWorkflowName], workflows);
+                continue;
             }
+
+            return rule.NextWorkflowName switch
+            {
+                "A" => true,
+                "R" => false,
+                _ => IsPartAccepted(part, workflows[rule.NextWorkflowName], workflows)
+            };
         }
 
         return false;
@@ -109,7 +86,7 @@ public static class Day19
     private static IEnumerable<PartRange> GetAcceptedRanges(
         PartRange startingRange,
         Workflow startingWorkflow,
-        Dictionary<string, Workflow> workflows)
+        IReadOnlyDictionary<string, Workflow> workflows)
     {
         var queue = new Queue<(PartRange, Workflow)>();
         queue.Enqueue((startingRange, startingWorkflow));
@@ -125,19 +102,10 @@ public static class Day19
                     if (rule.NextWorkflowName == "A")
                     {
                         yield return range;
-                        // if this range is accepted, we don't need to continue processing it
-                        break;
                     }
-                    else if (rule.NextWorkflowName == "R")
-                    {
-                        // if this range is rejected, we don't need to continue processing it
-                        break;
-                    }
-                    else
+                    else if (rule.NextWorkflowName != "R")
                     {
                         queue.Enqueue((range, workflows[rule.NextWorkflowName]));
-                        // if this range matches a GoTo, we don't need to continue processing it
-                        break;
                     }
                 }
 
@@ -147,25 +115,15 @@ public static class Day19
                     {
                         var minX = Math.Max(range.MinX, rule.Threshold + 1);
                         var matchingRange = range with { MinX = minX };
-                        // var nonMatchingRange = range with { MaxX = minX - 1 };
                         range = range with { MaxX = minX - 1 };
 
                         if (rule.NextWorkflowName == "A")
                         {
                             yield return matchingRange;
-                            // if this range is accepted, we don't need to continue processing it
-                            // break;
                         }
-                        else if (rule.NextWorkflowName == "R")
-                        {
-                            // if this range is rejected, we don't need to continue processing it
-                            // break;
-                        }
-                        else
+                        else if (rule.NextWorkflowName != "R")
                         {
                             queue.Enqueue((matchingRange, workflows[rule.NextWorkflowName]));
-                            // if this range matches a GoTo, we don't need to continue processing it
-                            // break;
                         }
                     }
 
@@ -173,25 +131,15 @@ public static class Day19
                     {
                         var maxX = Math.Min(range.MaxX, rule.Threshold - 1);
                         var matchingRange = range with { MaxX = maxX };
-                        // var nonMatchingRange = range with { MinX = maxX + 1 };
                         range = range with { MinX = maxX + 1 };
 
                         if (rule.NextWorkflowName == "A")
                         {
                             yield return matchingRange;
-                            // if this range is accepted, we don't need to continue processing it
-                            // break;
                         }
-                        else if (rule.NextWorkflowName == "R")
-                        {
-                            // if this range is rejected, we don't need to continue processing it
-                            // break;
-                        }
-                        else
+                        else if (rule.NextWorkflowName != "R")
                         {
                             queue.Enqueue((matchingRange, workflows[rule.NextWorkflowName]));
-                            // if this range matches a GoTo, we don't need to continue processing it
-                            // break;
                         }
                     }
                 }
@@ -202,25 +150,15 @@ public static class Day19
                     {
                         var minM = Math.Max(range.MinM, rule.Threshold + 1);
                         var matchingRange = range with { MinM = minM };
-                        // var nonMatchingRange = range with { MaxM = minM - 1 };
                         range = range with { MaxM = minM - 1 };
 
                         if (rule.NextWorkflowName == "A")
                         {
                             yield return matchingRange;
-                            // if this range is accepted, we don't need to continue processing it
-                            // break;
                         }
-                        else if (rule.NextWorkflowName == "R")
-                        {
-                            // if this range is rejected, we don't need to continue processing it
-                            // break;
-                        }
-                        else
+                        else if (rule.NextWorkflowName != "R")
                         {
                             queue.Enqueue((matchingRange, workflows[rule.NextWorkflowName]));
-                            // if this range matches a GoTo, we don't need to continue processing it
-                            // break;
                         }
                     }
 
@@ -228,25 +166,15 @@ public static class Day19
                     {
                         var maxM = Math.Min(range.MaxM, rule.Threshold - 1);
                         var matchingRange = range with { MaxM = maxM };
-                        // var nonMatchingRange = range with { MinM = maxM + 1 };
                         range = range with { MinM = maxM + 1 };
 
                         if (rule.NextWorkflowName == "A")
                         {
                             yield return matchingRange;
-                            // if this range is accepted, we don't need to continue processing it
-                            // break;
                         }
-                        else if (rule.NextWorkflowName == "R")
-                        {
-                            // if this range is rejected, we don't need to continue processing it
-                            // break;
-                        }
-                        else
+                        else if (rule.NextWorkflowName != "R")
                         {
                             queue.Enqueue((matchingRange, workflows[rule.NextWorkflowName]));
-                            // if this range matches a GoTo, we don't need to continue processing it
-                            // break;
                         }
                     }
                 }
@@ -257,25 +185,15 @@ public static class Day19
                     {
                         var minA = Math.Max(range.MinA, rule.Threshold + 1);
                         var matchingRange = range with { MinA = minA };
-                        // var nonMatchingRange = range with { MaxA = minA - 1 };
                         range = range with { MaxA = minA - 1 };
 
                         if (rule.NextWorkflowName == "A")
                         {
                             yield return matchingRange;
-                            // if this range is accepted, we don't need to continue processing it
-                            // break;
                         }
-                        else if (rule.NextWorkflowName == "R")
-                        {
-                            // if this range is rejected, we don't need to continue processing it
-                            // break;
-                        }
-                        else
+                        else if (rule.NextWorkflowName != "R")
                         {
                             queue.Enqueue((matchingRange, workflows[rule.NextWorkflowName]));
-                            // if this range matches a GoTo, we don't need to continue processing it
-                            // break;
                         }
                     }
 
@@ -283,25 +201,15 @@ public static class Day19
                     {
                         var maxA = Math.Min(range.MaxA, rule.Threshold - 1);
                         var matchingRange = range with { MaxA = maxA };
-                        // var nonMatchingRange = range with { MinA = maxA + 1 };
                         range = range with { MinA = maxA + 1 };
 
                         if (rule.NextWorkflowName == "A")
                         {
                             yield return matchingRange;
-                            // if this range is accepted, we don't need to continue processing it
-                            // break;
                         }
-                        else if (rule.NextWorkflowName == "R")
-                        {
-                            // if this range is rejected, we don't need to continue processing it
-                            // break;
-                        }
-                        else
+                        else if (rule.NextWorkflowName != "R")
                         {
                             queue.Enqueue((matchingRange, workflows[rule.NextWorkflowName]));
-                            // if this range matches a GoTo, we don't need to continue processing it
-                            // break;
                         }
                     }
                 }
@@ -312,25 +220,15 @@ public static class Day19
                     {
                         var minS = Math.Max(range.MinS, rule.Threshold + 1);
                         var matchingRange = range with { MinS = minS };
-                        // var nonMatchingRange = range with { MaxS = minS - 1 };
                         range = range with { MaxS = minS - 1 };
 
                         if (rule.NextWorkflowName == "A")
                         {
                             yield return matchingRange;
-                            // if this range is accepted, we don't need to continue processing it
-                            // break;
                         }
-                        else if (rule.NextWorkflowName == "R")
-                        {
-                            // if this range is rejected, we don't need to continue processing it
-                            // break;
-                        }
-                        else
+                        else if (rule.NextWorkflowName != "R")
                         {
                             queue.Enqueue((matchingRange, workflows[rule.NextWorkflowName]));
-                            // if this range matches a GoTo, we don't need to continue processing it
-                            // break;
                         }
                     }
 
@@ -338,89 +236,19 @@ public static class Day19
                     {
                         var maxS = Math.Min(range.MaxS, rule.Threshold - 1);
                         var matchingRange = range with { MaxS = maxS };
-                        // var nonMatchingRange = range with { MinS = maxS + 1 };
                         range = range with { MinS = maxS + 1 };
 
                         if (rule.NextWorkflowName == "A")
                         {
                             yield return matchingRange;
-                            // if this range is accepted, we don't need to continue processing it
-                            // break;
                         }
-                        else if (rule.NextWorkflowName == "R")
-                        {
-                            // if this range is rejected, we don't need to continue processing it
-                            // break;
-                        }
-                        else
+                        else if (rule.NextWorkflowName != "R")
                         {
                             queue.Enqueue((matchingRange, workflows[rule.NextWorkflowName]));
-                            // if this range matches a GoTo, we don't need to continue processing it
-                            // break;
                         }
                     }
                 }
             }
         }
     }
-
-    private record Workflow(string Name, Rule[] Rules)
-    {
-        public static Workflow Parse(string text)
-        {
-            var split = text.Split('{');
-            var name = split[0];
-            var ruleStrings = split[1][..^1].Split(',');
-            var rules = ruleStrings.Select(Rule.Parse).ToArray();
-
-            return new Workflow(name, rules);
-        }
-    }
-
-    private record Rule(char Category, RuleType Type, int Threshold, string NextWorkflowName)
-    {
-        public static Rule Parse(string text)
-        {
-            var split = text.Split(':');
-
-            if (split.Length == 1)
-            {
-                return new Rule(' ', RuleType.GoTo, 0, text);
-            }
-
-            var rule = split[0];
-            var nextWorkflowName = split[1];
-
-            var category = rule[0];
-            var comparison = rule[1];
-            var threshold = int.Parse(rule[2..]);
-
-            var type = comparison switch
-            {
-                '<' => RuleType.LessThan,
-                '>' => RuleType.GreaterThan,
-                _ => throw new Exception("Invalid comparison")
-            };
-
-            return new Rule(category, type, threshold, nextWorkflowName);
-        }
-    }
-
-    private enum RuleType
-    {
-        GoTo,
-        GreaterThan,
-        LessThan,
-    }
-
-    private record Part(int X, int M, int A, int S)
-    {
-        public static Part Parse(string text)
-        {
-            var (x, m, a, s) = text[1..^1].Split(',').Select(x => int.Parse(x[2..])).ToArray();
-            return new Part(x, m, a, s);
-        }
-    }
-
-    private record PartRange(long MinX, long MaxX, long MinM, long MaxM, long MinA, long MaxA, long MinS, long MaxS);
 }
