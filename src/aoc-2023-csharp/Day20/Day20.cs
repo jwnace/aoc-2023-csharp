@@ -14,16 +14,12 @@ public static class Day20
     public static long Solve1(string[] lines)
     {
         var modules = ParseModules(lines);
-
+        var broadcaster = modules["broadcaster"];
         var lowPulses = 0L;
         var highPulses = 0L;
 
-        var broadcaster = modules["broadcaster"];
-
         for (var i = 0; i < 1_000; i++)
         {
-            // send a low pulse to the broadcaster
-            // var (low, high) = broadcaster.Pulse(Pulse.Low);
             var queue = new PriorityQueue<(Module Source, Module destination, Pulse pulse, int priority), int>();
             queue.Enqueue((broadcaster, broadcaster, Pulse.Low, 0), 0);
 
@@ -92,9 +88,8 @@ public static class Day20
         return lowPulses * highPulses;
     }
 
-    public static long Solve2(string[] lines)
+    private static long Solve2(string[] lines)
     {
-        // TODO: modify the implementation so it's not hardcoded based on my input file
         // - we are finished when the `rx` module receives a low pulse from the `cl` module
         // - the `cl` module will send a low pulse when it receives a high pulse from all inputs
         // - the `cl` module has four inputs: `js`, `qs`, `dt`, and `ts`
@@ -102,13 +97,11 @@ public static class Day20
         // - we can do this by finding the least common multiple of the cycle lengths of the four inputs
 
         var modules = ParseModules(lines);
-
-        var lowPulses = 0L;
-        var highPulses = 0L;
-
         var broadcaster = modules["broadcaster"];
-
         var cycleLengths = new Dictionary<string, long>();
+
+        // TODO: modify the implementation so it's not hardcoded based on my input file
+        var keys = new[] { "js", "qs", "dt", "ts" };
 
         for (var i = 0; i < int.MaxValue; i++)
         {
@@ -120,36 +113,12 @@ public static class Day20
                 var current = queue.Dequeue();
                 var (source, module, pulse, priority) = current;
 
-                if (pulse == Pulse.High)
+                if (keys.Contains(source.Name) && pulse == Pulse.High && !cycleLengths.ContainsKey(source.Name))
                 {
-                    highPulses++;
-                }
-                else
-                {
-                    lowPulses++;
+                    cycleLengths[source.Name] = i + 1;
                 }
 
-                if (source.Name == "js" && pulse == Pulse.High && !cycleLengths.ContainsKey("js"))
-                {
-                    cycleLengths["js"] = i + 1;
-                }
-
-                if (source.Name == "qs" && pulse == Pulse.High && !cycleLengths.ContainsKey("qs"))
-                {
-                    cycleLengths["qs"] = i + 1;
-                }
-
-                if (source.Name == "dt" && pulse == Pulse.High && !cycleLengths.ContainsKey("dt"))
-                {
-                    cycleLengths["dt"] = i + 1;
-                }
-
-                if (source.Name == "ts" && pulse == Pulse.High && !cycleLengths.ContainsKey("ts"))
-                {
-                    cycleLengths["ts"] = i + 1;
-                }
-
-                if (cycleLengths.Count == 4)
+                if (cycleLengths.Count == keys.Length)
                 {
                     return MathHelper.LeastCommonMultiple(cycleLengths.Values.ToArray());
                 }
@@ -205,7 +174,7 @@ public static class Day20
         throw new Exception("No solution found");
     }
 
-    private static Dictionary<string, Module> ParseModules(string[] input)
+    private static Dictionary<string, Module> ParseModules(IEnumerable<string> input)
     {
         var modules = new Dictionary<string, Module>();
 
@@ -232,15 +201,11 @@ public static class Day20
 
             var module = modules.TryGetValue(name, out var m)
                 ? m
-                : new Module(name, type, new List<Module>(), new List<Module>());
+                : new Module(name, type);
 
             if (module.Type is ModuleType.Unknown)
             {
                 module.Type = type;
-            }
-            else if (module.Type != type)
-            {
-                throw new Exception($"Module {name} has conflicting types: {module.Type} and {type}");
             }
 
             modules[name] = module;
@@ -249,7 +214,7 @@ public static class Day20
             {
                 var destination = modules.TryGetValue(destinationName, out var dm)
                     ? dm
-                    : new Module(destinationName, ModuleType.Unknown, new List<Module>(), new List<Module>());
+                    : new Module(destinationName, ModuleType.Unknown);
 
                 modules[destinationName] = destination;
 
@@ -259,48 +224,5 @@ public static class Day20
         }
 
         return modules;
-    }
-
-    private class Module
-    {
-        public string Name { get; init; }
-        public ModuleType Type { get; set; }
-        public List<Module> Destinations { get; init; }
-        public List<Module> Inputs { get; init; }
-        public bool IsOn { get; set; } = false;
-        public Dictionary<string, Pulse> Memory = new();
-
-        public Module(string name, ModuleType type, List<Module> destinations, List<Module> inputs)
-        {
-            Name = name;
-            Type = type;
-            Destinations = destinations;
-            Inputs = inputs;
-        }
-
-        public void Deconstruct(out string name, out List<Module> destinations)
-        {
-            name = Name;
-            destinations = Destinations;
-        }
-
-        public override string ToString()
-        {
-            return $"{Type} {Name} -> {string.Join(", ", Destinations.Select(d => d.Name))}";
-        }
-    }
-
-    private enum ModuleType
-    {
-        Unknown,
-        Broadcaster,
-        FlipFlop,
-        Conjunction,
-    }
-
-    private enum Pulse
-    {
-        Low,
-        High,
     }
 }
