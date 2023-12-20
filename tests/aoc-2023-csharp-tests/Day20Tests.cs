@@ -4,13 +4,24 @@ namespace aoc_2023_csharp_tests;
 
 public class Day20Tests
 {
-    [Test]
-    public void Part1_Example()
+    [TestCase(new[]
     {
-        // arrange
-        var input = "";
-        var expected = 0;
-
+        "broadcaster -> a, b, c",
+        "%a -> b",
+        "%b -> c",
+        "%c -> inv",
+        "&inv -> a",
+    }, 32000000)]
+    [TestCase(new[]
+    {
+        "broadcaster -> a",
+        "%a -> inv, con",
+        "&inv -> b",
+        "%b -> con",
+        "&con -> output",
+    }, 11687500)]
+    public void Part1_Example(string[] input, long expected)
+    {
         // act
         var actual = Day20.Solve1(input);
 
@@ -21,14 +32,18 @@ public class Day20Tests
     [Test]
     public void Part1_Solution()
     {
-        Day20.Part1().Should().Be(0);
+        Day20.Part1().Should().Be(938065580);
     }
 
     [Test]
     public void Part2_Example()
     {
         // arrange
-        var input = "";
+        var input = new[]
+        {
+            "",
+        };
+
         var expected = 0;
 
         // act
