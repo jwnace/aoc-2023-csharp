@@ -1,4 +1,5 @@
 ﻿using aoc_2023_csharp.Extensions;
+using aoc_2023_csharp.Shared;
 
 namespace aoc_2023_csharp.Day20;
 
@@ -39,8 +40,6 @@ public static class Day20
                 {
                     lowPulses++;
                 }
-
-                // Console.WriteLine($"highPulses: {highPulses}, lowPulses: {lowPulses}, module: {module}");
 
                 if (module.Type == ModuleType.Broadcaster)
                 {
@@ -93,9 +92,117 @@ public static class Day20
         return lowPulses * highPulses;
     }
 
-    public static long Solve2(string[] input)
+    public static long Solve2(string[] lines)
     {
-        return 0;
+        // TODO: modify the implementation so it's not hardcoded based on my input file
+        // - we are finished when the `rx` module receives a low pulse from the `cl` module
+        // - the `cl` module will send a low pulse when it receives a high pulse from all inputs
+        // - the `cl` module has four inputs: `js`, `qs`, `dt`, and `ts`
+        // - we need to determine the first time all four inputs send high pulses
+        // - we can do this by finding the least common multiple of the cycle lengths of the four inputs
+
+        var modules = ParseModules(lines);
+
+        var lowPulses = 0L;
+        var highPulses = 0L;
+
+        var broadcaster = modules["broadcaster"];
+
+        var cycleLengths = new Dictionary<string, long>();
+
+        for (var i = 0; i < int.MaxValue; i++)
+        {
+            var queue = new PriorityQueue<(Module Source, Module destination, Pulse pulse, int priority), int>();
+            queue.Enqueue((broadcaster, broadcaster, Pulse.Low, 0), 0);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                var (source, module, pulse, priority) = current;
+
+                if (pulse == Pulse.High)
+                {
+                    highPulses++;
+                }
+                else
+                {
+                    lowPulses++;
+                }
+
+                if (source.Name == "js" && pulse == Pulse.High && !cycleLengths.ContainsKey("js"))
+                {
+                    cycleLengths["js"] = i + 1;
+                }
+
+                if (source.Name == "qs" && pulse == Pulse.High && !cycleLengths.ContainsKey("qs"))
+                {
+                    cycleLengths["qs"] = i + 1;
+                }
+
+                if (source.Name == "dt" && pulse == Pulse.High && !cycleLengths.ContainsKey("dt"))
+                {
+                    cycleLengths["dt"] = i + 1;
+                }
+
+                if (source.Name == "ts" && pulse == Pulse.High && !cycleLengths.ContainsKey("ts"))
+                {
+                    cycleLengths["ts"] = i + 1;
+                }
+
+                if (cycleLengths.Count == 4)
+                {
+                    return MathHelper.LeastCommonMultiple(cycleLengths.Values.ToArray());
+                }
+
+                if (module.Type == ModuleType.Broadcaster)
+                {
+                    foreach (var destination in module.Destinations)
+                    {
+                        queue.Enqueue((module, destination, pulse, priority + 1), priority + 1);
+                    }
+                }
+
+                if (module.Type == ModuleType.FlipFlop)
+                {
+                    if (pulse == Pulse.High)
+                    {
+                        continue;
+                    }
+
+                    module.IsOn = !module.IsOn;
+
+                    var newPulse = module.IsOn ? Pulse.High : Pulse.Low;
+
+                    foreach (var destination in module.Destinations)
+                    {
+                        queue.Enqueue((module, destination, newPulse, priority + 1), priority + 1);
+                    }
+                }
+
+                if (module.Type == ModuleType.Conjunction)
+                {
+                    // HACK: initialize the memory if it's empty
+                    if (module.Memory.Count == 0)
+                    {
+                        foreach (var input in module.Inputs)
+                        {
+                            module.Memory[input.Name] = Pulse.Low;
+                        }
+                    }
+
+                    module.Memory[source.Name] = pulse;
+
+                    var newPulse = module.Memory.Values.All(x => x == Pulse.High) ? Pulse.Low : Pulse.High;
+
+                    foreach (var destination in module.Destinations)
+                    {
+                        queue.Enqueue((module, destination, newPulse, priority + 1), priority + 1);
+                    }
+                }
+            }
+        }
+
+        throw new Exception("No solution found");
     }
 
     private static Dictionary<string, Module> ParseModules(string[] input)

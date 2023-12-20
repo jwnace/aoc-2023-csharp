@@ -36,26 +36,8 @@ public class Day20Tests
     }
 
     [Test]
-    public void Part2_Example()
-    {
-        // arrange
-        var input = new[]
-        {
-            "",
-        };
-
-        var expected = 0;
-
-        // act
-        var actual = Day20.Solve2(input);
-
-        // assert
-        actual.Should().Be(expected);
-    }
-
-    [Test]
     public void Part2_Solution()
     {
-        Day20.Part2().Should().Be(0);
+        Day20.Part2().Should().Be(250628960065793);
     }
 }
