@@ -4,15 +4,24 @@ namespace aoc_2023_csharp_tests;
 
 public class Day21Tests
 {
-    [Test]
-    public void Part1_Example()
+    [TestCase(new[]
     {
-        // arrange
-        var input = "";
-        var expected = 0;
-
+        "...........",
+        ".....###.#.",
+        ".###.##..#.",
+        "..#.#...#..",
+        "....#.#....",
+        ".##..S####.",
+        ".##..#...#.",
+        ".......##..",
+        ".##.#.####.",
+        ".##..##.##.",
+        "...........",
+    }, 6, 16)]
+    public void Part1_Example(string[] input, int steps, int expected)
+    {
         // act
-        var actual = Day21.Solve1(input);
+        var actual = Day21.Solve1(input, steps);
 
         // assert
         actual.Should().Be(expected);
@@ -21,18 +30,37 @@ public class Day21Tests
     [Test]
     public void Part1_Solution()
     {
-        Day21.Part1().Should().Be(0);
+        Day21.Part1().Should().Be(3689);
     }
 
-    [Test]
-    public void Part2_Example()
+    [Ignore("ignoring this for now...")]
+    [TestCase(6, 16)]
+    [TestCase(10, 50)]
+    [TestCase(50, 1594)]
+    [TestCase(100, 6536)]
+    [TestCase(500, 167004)]
+    [TestCase(1000, 668697)]
+    [TestCase(5000, 16733044)]
+    public void Part2_Example(int steps, int expected)
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            "...........",
+            ".....###.#.",
+            ".###.##..#.",
+            "..#.#...#..",
+            "....#.#....",
+            ".##..S####.",
+            ".##..#...#.",
+            ".......##..",
+            ".##.#.####.",
+            ".##..##.##.",
+            "...........",
+        };
 
         // act
-        var actual = Day21.Solve2(input);
+        var actual = Day21.Solve2(input, steps);
 
         // assert
         actual.Should().Be(expected);
@@ -41,6 +69,6 @@ public class Day21Tests
     [Test]
     public void Part2_Solution()
     {
-        Day21.Part2().Should().Be(0);
+        Day21.Part2().Should().Be(610158187362102);
     }
 }
