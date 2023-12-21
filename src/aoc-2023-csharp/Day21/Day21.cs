@@ -12,10 +12,12 @@ public static class Day21
 
     public static long Solve2(string[] input, int goal)
     {
-        // TODO: get rid of these magic numbers
-        var term1 = CountPossibilities(input, 65);
-        var term2 = CountPossibilities(input, 65 + 131);
-        var term3 = CountPossibilities(input, 65 + 131 + 131);
+        var size = input.Length;
+        var half = size / 2;
+
+        var term1 = CountPossibilities(input, half);
+        var term2 = CountPossibilities(input, half + size);
+        var term3 = CountPossibilities(input, half + size + size);
 
         return SolveQuadratic(goal, input.Length, term1, term2, term3);
     }
@@ -44,11 +46,11 @@ public static class Day21
         return (grid, start);
     }
 
-    private static int CountPossibilities(string[] input, int goal)
+    private static int CountPossibilities(IReadOnlyList<string> input, int goal)
     {
         var (grid, start) = ParseInput(input);
 
-        var maxRow = input.Length;
+        var maxRow = input.Count;
         var maxCol = input[0].Length;
 
         var destinations = new HashSet<(int row, int col)>();
