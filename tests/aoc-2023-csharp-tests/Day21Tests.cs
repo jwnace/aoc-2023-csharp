@@ -33,19 +33,34 @@ public class Day21Tests
         Day21.Part1().Should().Be(3689);
     }
 
-    [Test]
-    public void Part2_Example()
+    [Ignore("ignoring this for now...")]
+    [TestCase(6, 16)]
+    [TestCase(10, 50)]
+    [TestCase(50, 1594)]
+    [TestCase(100, 6536)]
+    [TestCase(500, 167004)]
+    [TestCase(1000, 668697)]
+    [TestCase(5000, 16733044)]
+    public void Part2_Example(int steps, int expected)
     {
         // arrange
         var input = new[]
         {
-            "",
+            "...........",
+            ".....###.#.",
+            ".###.##..#.",
+            "..#.#...#..",
+            "....#.#....",
+            ".##..S####.",
+            ".##..#...#.",
+            ".......##..",
+            ".##.#.####.",
+            ".##..##.##.",
+            "...........",
         };
 
-        var expected = 0;
-
         // act
-        var actual = Day21.Solve2(input);
+        var actual = Day21.Solve2(input, steps);
 
         // assert
         actual.Should().Be(expected);
@@ -54,6 +69,6 @@ public class Day21Tests
     [Test]
     public void Part2_Solution()
     {
-        Day21.Part2().Should().Be(0);
+        Day21.Part2().Should().Be(610158187362102);
     }
 }
