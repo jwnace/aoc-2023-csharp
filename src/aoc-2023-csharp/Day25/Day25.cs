@@ -9,7 +9,7 @@ public static class Day25
 
     public static int Part1() => Solve1(Input);
 
-    public static int Part2() => Solve2(Input);
+    public static string Part2() => "Merry Christmas!";
 
     public static int Solve1(string[] input)
     {
