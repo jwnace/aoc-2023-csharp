@@ -4,12 +4,29 @@ namespace aoc_2023_csharp_tests;
 
 public class Day25Tests
 {
+    [Ignore("ignore example test")]
     [Test]
     public void Part1_Example()
     {
         // arrange
-        var input = "";
-        var expected = 0;
+        var input = new[]
+        {
+            "jqt: rhn xhk nvd",
+            "rsh: frs pzl lsr",
+            "xhk: hfx",
+            "cmg: qnr nvd lhk bvb",
+            "rhn: xhk bvb hfx",
+            "bvb: xhk hfx",
+            "pzl: lsr hfx nvd",
+            "qnr: nvd",
+            "ntq: jqt hfx bvb xhk",
+            "nvd: lhk",
+            "lsr: lhk",
+            "rzs: qnr cmg lsr rsh",
+            "frs: qnr lhk lsr",
+        };
+
+        var expected = 54;
 
         // act
         var actual = Day25.Solve1(input);
@@ -21,14 +38,19 @@ public class Day25Tests
     [Test]
     public void Part1_Solution()
     {
-        Day25.Part1().Should().Be(0);
+        Day25.Part1().Should().Be(546804);
     }
 
+    [Ignore("ignore example test")]
     [Test]
     public void Part2_Example()
     {
         // arrange
-        var input = "";
+        var input = new[]
+        {
+            "",
+        };
+
         var expected = 0;
 
         // act
@@ -38,6 +60,7 @@ public class Day25Tests
         actual.Should().Be(expected);
     }
 
+    [Ignore("ignore part2 test")]
     [Test]
     public void Part2_Solution()
     {
